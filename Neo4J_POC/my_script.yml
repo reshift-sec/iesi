@@ -1,0 +1,35 @@
+!!org.poc.Metadata
+#NOTE changed this temproary from list to non-list to workaround some yaml parsing issue
+type: Script
+data:
+  name: script3
+  description: This is a sample script to show actions and dependencies
+  actions:
+  - name: copyFiles
+    type: fho.executeFileTransfer
+    description: Copies files
+    parameters:
+    - name: sourceFilePath
+      value: C:/temp
+    - name: sourceFileName
+      value: x.txt
+    - name: sourceConnection
+      value: iesi-instance
+  - name: readFile
+    type: fwk.dummy
+    description: This action will read the copied file
+    depends_on: copyFiles
+  - name: deleteFile
+    type: fwk.dummy
+    description: This action will delete the file after reading
+    depends_on: readFile
+  - name: ping
+    type: fwk.dummy
+    description: This action is independant
+  - name: readTime
+    type: fwk.dummy
+    description: This action will read out system time
+  - name: tellTime
+    type: fwk.dummy
+    description: This action will output the system time
+    depends_on: readTime
