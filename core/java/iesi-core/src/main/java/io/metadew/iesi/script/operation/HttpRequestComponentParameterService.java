@@ -7,7 +7,8 @@ import io.metadew.iesi.metadata.definition.component.ComponentAttribute;
 import io.metadew.iesi.metadata.definition.component.ComponentParameter;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
-import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,8 @@ import java.util.Map;
  * @author peter.billen
  */
 public class HttpRequestComponentParameterService {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final DataTypeService dataTypeService;
     private ExecutionControl executionControl;
@@ -43,7 +46,7 @@ public class HttpRequestComponentParameterService {
     }
 
     public DataType getParameterValue(ComponentParameter componentParameter, List<ComponentAttribute> componentAttributes, ActionExecution actionExecution)  {
-        executionControl.logMessage(actionExecution, "component.param " + componentParameter.getName() + ": " + componentParameter.getValue(), Level.DEBUG);
+        LOGGER.debug("component.param " + componentParameter.getName() + ": " + componentParameter.getValue());
         return getParameterValue(componentParameter.getValue(), componentAttributes, actionExecution);
     }
 

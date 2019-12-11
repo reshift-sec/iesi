@@ -14,17 +14,24 @@ import java.util.Map;
 
 public class ActionTraceService {
 
-    private final ActionParameterTraceService actionParameterTraceService;
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ActionTraceService() {
-        this.actionParameterTraceService = new ActionParameterTraceService();
+    private static ActionTraceService INSTANCE;
+
+    public synchronized static ActionTraceService getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ActionTraceService();
+        }
+        return INSTANCE;
+    }
+
+    private ActionTraceService() {
     }
 
     public void trace(ActionExecution actionExecution, Map<String, DataType> actionParameterMap) {
         try {
             ActionTraceConfiguration.getInstance().insert(new ActionTrace(actionExecution.getExecutionControl().getRunId(), actionExecution.getProcessId(), actionExecution.getAction()));
-            actionParameterTraceService.trace(actionExecution, actionParameterMap);
+            ActionParameterTraceService.getInstance().trace(actionExecution, actionParameterMap);
 
         } catch (MetadataAlreadyExistsException e) {
             StringWriter stackTrace = new StringWriter();

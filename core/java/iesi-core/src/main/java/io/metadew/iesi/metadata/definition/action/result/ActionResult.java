@@ -14,7 +14,7 @@ public class ActionResult extends Metadata<ActionResultKey> {
 	private LocalDateTime startTimestamp;
 	private LocalDateTime endTimestamp;
 
-	public ActionResult(String runId, Long processId, String actionId, Long scriptProcessId,  String actionName, String environment, String status,
+	public ActionResult(String runId, Long processId, String actionId, Long scriptProcessId, String actionName, String environment, String status,
 						LocalDateTime startTimestamp, LocalDateTime endTimestamp) {
 		super(new ActionResultKey(runId, processId, actionId));
 		this.scriptProcessId = scriptProcessId;

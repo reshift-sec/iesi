@@ -5,19 +5,16 @@ import io.metadew.iesi.data.definition.DataField;
 import io.metadew.iesi.data.definition.DataRow;
 import io.metadew.iesi.data.definition.DataTable;
 import io.metadew.iesi.metadata.execution.MetadataControl;
-import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class RestoreTableOperation {
 
-    private ExecutionControl executionControl;
     private DataTable dataTable;
     private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
-    public RestoreTableOperation(ExecutionControl executionControl, DataTable dataTable) {
-        this.setExecutionControl(executionControl);
+    public RestoreTableOperation(DataTable dataTable) {
         this.setDataTable(dataTable);
     }
 
@@ -88,11 +85,4 @@ public class RestoreTableOperation {
         this.dataTable = dataTable;
     }
 
-    public ExecutionControl getExecutionControl() {
-        return executionControl;
-    }
-
-    public void setExecutionControl(ExecutionControl executionControl) {
-        this.executionControl = executionControl;
-    }
 }

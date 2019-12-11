@@ -18,7 +18,16 @@ import java.io.StringWriter;
 public class ScriptTraceService {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ScriptTraceService() {}
+    private static ScriptTraceService INSTANCE;
+
+    public synchronized static ScriptTraceService getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ScriptTraceService();
+        }
+        return INSTANCE;
+    }
+
+    private ScriptTraceService() {}
 
     public void trace(ScriptExecution scriptExecution) {
         try {

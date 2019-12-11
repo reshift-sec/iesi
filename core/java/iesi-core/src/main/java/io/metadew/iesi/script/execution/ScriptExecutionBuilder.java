@@ -1,14 +1,18 @@
 package io.metadew.iesi.script.execution;
 
+import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ScriptExecutionBuilder {
 
@@ -90,17 +94,19 @@ public class ScriptExecutionBuilder {
     }
 
     public ScriptExecution build() throws ScriptExecutionBuildException {
+        String runId = UUID.randomUUID().toString();
+        ThreadContext.put("runId", runId);
         if (route) {
-            return buildRouteScriptExecution();
+            return buildRouteScriptExecution(runId);
         } else {
-            return buildNonRouteScriptExecution();
+            return buildNonRouteScriptExecution(runId);
         }
     }
 
-    private ScriptExecution buildNonRouteScriptExecution() throws ScriptExecutionBuildException {
+    private ScriptExecution buildNonRouteScriptExecution(String runId) throws ScriptExecutionBuildException {
         if (root) {
             try {
-                ExecutionControl executionControl = new ExecutionControl();
+                ExecutionControl executionControl = new ExecutionControl(runId);
                 return new NonRouteScriptExecution(
                         getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to script execution builder")),
                         getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
@@ -136,9 +142,9 @@ public class ScriptExecutionBuilder {
         }
     }
 
-    private ScriptExecution buildRouteScriptExecution() throws ScriptExecutionBuildException {
+    private ScriptExecution buildRouteScriptExecution(String runId) throws ScriptExecutionBuildException {
         try {
-            ExecutionControl executionControl = root ? new ExecutionControl() : getExecutionControl().orElseThrow(() -> new ScriptExecutionBuildException("No execution control supplied to route script execution builder"));
+            ExecutionControl executionControl = root ? new ExecutionControl(runId) : getExecutionControl().orElseThrow(() -> new ScriptExecutionBuildException("No execution control supplied to route script execution builder"));
             return new RouteScriptExecution (
                     getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to route script execution builder")),
                     getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),

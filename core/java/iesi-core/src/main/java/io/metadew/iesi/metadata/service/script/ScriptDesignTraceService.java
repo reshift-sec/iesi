@@ -21,10 +21,16 @@ import java.io.StringWriter;
 public class ScriptDesignTraceService {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private ActionDesignTraceService actionDesignTraceService;
+    private static ScriptDesignTraceService INSTANCE;
 
-    public ScriptDesignTraceService() {
-        this.actionDesignTraceService = new ActionDesignTraceService();
+    public synchronized static ScriptDesignTraceService getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ScriptDesignTraceService();
+        }
+        return INSTANCE;
+    }
+
+    private ScriptDesignTraceService() {
     }
 
     public void trace(ScriptExecution scriptExecution) {
@@ -43,7 +49,7 @@ public class ScriptDesignTraceService {
             }
 
             for (Action action : script.getActions()) {
-                actionDesignTraceService.trace(runId, processId, action);
+                ActionDesignTraceService.getInstance().trace(runId, processId, action);
             }
         } catch (MetadataAlreadyExistsException e) {
             StringWriter StackTrace = new StringWriter();

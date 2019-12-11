@@ -5,6 +5,8 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -17,6 +19,7 @@ public class FwkDummy {
 
     // Parameters
     private HashMap<String, ActionParameterOperation> actionParameterOperationMap;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public FwkDummy() {
@@ -39,7 +42,7 @@ public class FwkDummy {
 
     public boolean execute() {
         try {
-            this.getExecutionControl().logMessage(this.getActionExecution(), "Not doing anything", Level.TRACE);
+            LOGGER.info("Not doing anything");
             this.getActionExecution().getActionControl().increaseSuccessCount();
             return true;
         } catch (Exception e) {

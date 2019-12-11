@@ -2,14 +2,18 @@ package io.metadew.iesi.data.generation.execution;
 
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecution;
+import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.definition.generation.Generation;
 import io.metadew.iesi.metadata.definition.generation.GenerationRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.UUID;
 
 public class GenerationExecution {
 
@@ -29,7 +33,9 @@ public class GenerationExecution {
 			NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, SQLException {
 		this.setGeneration(generation);
 		this.setFrameworkExecution(frameworkExecution);
-		this.setExecutionControl(new ExecutionControl());
+		String runId = UUID.randomUUID().toString();
+		ThreadContext.put("runId", runId);
+		this.setExecutionControl(new ExecutionControl(runId));
 	}
 	
 	// Methods
@@ -38,7 +44,7 @@ public class GenerationExecution {
 
 		// Log Start
 		//this.getExecutionControl().logStart(this);
-		this.setProcessId(0L);
+		this.processId = 0L;
 		this.setGenerationRuntime(new GenerationRuntime(this.getFrameworkExecution(), this.getExecutionControl()));
 		this.getGenerationRuntime().addGeneration(this.getGeneration(), this.getNumberOfRecords());
 		this.setGenerationOutputExecution(new GenerationOutputExecution(this.getFrameworkExecution(), this.getExecutionControl(), this, generationOutputName));

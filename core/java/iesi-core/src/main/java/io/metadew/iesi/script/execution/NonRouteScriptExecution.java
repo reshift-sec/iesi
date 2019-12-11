@@ -3,10 +3,14 @@ package io.metadew.iesi.script.execution;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
 
 public class NonRouteScriptExecution extends ScriptExecution {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public NonRouteScriptExecution(Script script, String environment, ExecutionControl executionControl, ExecutionMetrics executionMetrics, Long processId, boolean exitOnCompletion, ScriptExecution parentScriptExecution, Map<String, String> parameters, Map<String, String> impersonations, ActionSelectOperation actionSelectOperation, RootingStrategy rootingStrategy) {
         super(script, environment, executionControl, executionMetrics, processId, exitOnCompletion, parentScriptExecution, parameters, impersonations, actionSelectOperation, rootingStrategy);
@@ -14,10 +18,9 @@ public class NonRouteScriptExecution extends ScriptExecution {
 
     @Override
     public void prepareExecution() {
-        getExecutionControl().logMessage(this, "script.name=" + this.getScript().getName(), Level.INFO);
-        getExecutionControl().logMessage(this, "script.version=" + this.getScript().getVersion().getNumber(), Level.INFO);
-        getExecutionControl().logMessage(this, "exec.env=" + this.getExecutionControl().getEnvName(),
-                Level.INFO);
+        LOGGER.info("script.name=" + this.getScript().getName());
+        LOGGER.info("script.version=" + this.getScript().getVersion().getNumber());
+        LOGGER.info("exec.env=" + this.getExecutionControl().getEnvName());
         this.getExecutionControl().logStart(this);
 
         for (Map.Entry<String, String> parameter : parameters.entrySet()) {

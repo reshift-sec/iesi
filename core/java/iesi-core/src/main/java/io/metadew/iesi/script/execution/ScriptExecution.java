@@ -3,15 +3,21 @@ package io.metadew.iesi.script.execution;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
+import io.metadew.iesi.metadata.service.script.ScriptTraceService;
 import io.metadew.iesi.script.action.fwk.FwkIncludeScript;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.concurrent.*;
 
 public abstract class ScriptExecution {
+
+	private static final Logger LOGGER = LogManager.getLogger();
+	
 	private RootingStrategy rootingStrategy;
 	private Script script;
 	private ExecutionControl executionControl;
@@ -84,7 +90,7 @@ public abstract class ScriptExecution {
 
 				while (retryCounter <= action.getRetries() && actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0) {
 					if (action.getErrorStop()) {
-						executionControl.logMessage(this, "action.error -> retries.ignore", Level.INFO);
+						LOGGER.info("action.error -> retries.ignore");
 						executionControl.setActionErrorStop(true);
 						break;
 					} else if (!iterationExecution.isIterationOff() && iterationExecution.getIterationOperation().getIteration().getInterrupt().equalsIgnoreCase("y")
@@ -93,7 +99,7 @@ public abstract class ScriptExecution {
 					}
 
 					actionExecution.initialize();
-					executionControl.logMessage(this, "action.retry." + retryCounter, Level.INFO);
+					LOGGER.info("action.retry." + retryCounter);
 					actionExecution.execute(iterationExecution.getIterationInstance());
 					retryCounter++;
 				}
@@ -105,19 +111,18 @@ public abstract class ScriptExecution {
 			}
 
 			if (action.getType().equalsIgnoreCase("fwk.exitScript")) {
-				executionControl.logMessage(this, "script.exit", Level.INFO);
+				LOGGER.info("script.exit");
 				executionControl.setScriptExit(true);
 				break;
 			}
 
 			if (!actionExecution.isExecuted()) {
 				executionMetrics.increaseWarningCount(1);
-				executionControl.logMessage(this, "action.warning -> iteration.condition.block",
-						Level.INFO);
+				LOGGER.info("action.warning -> iteration.condition.block");
 			}
 
 			if (actionExecution.getActionControl().getExecutionMetrics().getErrorCount() > 0 && action.getErrorStop()) {
-				executionControl.logMessage(this, "action.error -> script.stop", Level.INFO);
+				LOGGER.info("action.error -> script.stop");
 				executionControl.setActionErrorStop(true);
 				break;
 			}
@@ -178,14 +183,14 @@ public abstract class ScriptExecution {
 						.mergeExecutionMetrics(completedScriptExecution.getExecutionMetrics());
 			} catch (Exception e) {
 				Throwable cause = e.getCause();
-				this.getExecutionControl().logMessage(this, "route.error=" + cause, Level.INFO);
+				LOGGER.info("route.error=" + cause);
 				continue;
 			}
 		}
 	}
 
 	public void traceDesignMetadata() {
-		this.getExecutionControl().getExecutionTrace().setExecution(this);
+		ScriptTraceService.getInstance().trace(this);
 	}
 
 	public ExecutionControl getExecutionControl() {

@@ -4,6 +4,8 @@ import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.PrintWriter;
@@ -23,6 +25,7 @@ public class AttributeOperation {
     private ActionExecution actionExecution;
     private String type;
     private String name;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public AttributeOperation(ExecutionControl executionControl, ActionExecution actionExecution, String type, String name) {
@@ -46,15 +49,15 @@ public class AttributeOperation {
 
         // Set attribute values
         CachedRowSet crs = null;
-        this.getExecutionControl().logMessage(this.getActionExecution(), "component.name=" + name, Level.DEBUG);
+        LOGGER.debug("component.name=" + name);
         crs = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
         try {
             while (crs.next()) {
                 String key = crs.getString("COMP_ATT_NM");
                 String value = crs.getString("COMP_ATT_VAL");
                 this.getProperties().put(key, value);
-                this.getExecutionControl().logMessage(this.getActionExecution(), "attribute.name=" + key, Level.DEBUG);
-                this.getExecutionControl().logMessage(this.getActionExecution(), "attribute.name=" + value, Level.DEBUG);
+                LOGGER.debug("attribute.name=" + key);
+                LOGGER.debug("attribute.name=" + value);
             }
             crs.close();
         } catch (Exception e) {

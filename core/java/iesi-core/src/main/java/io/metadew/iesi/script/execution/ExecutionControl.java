@@ -1,14 +1,12 @@
 package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.common.text.TextTools;
-import io.metadew.iesi.connection.elasticsearch.filebeat.DelimitedFileBeatElasticSearchConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.configuration.ScriptRunStatus;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.IESIMessage;
-import io.metadew.iesi.metadata.backup.BackupExecution;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultOutputConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -20,14 +18,11 @@ import io.metadew.iesi.metadata.definition.action.result.ActionResult;
 import io.metadew.iesi.metadata.definition.action.result.ActionResultOutput;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultKey;
 import io.metadew.iesi.metadata.definition.action.result.key.ActionResultOutputKey;
-import io.metadew.iesi.metadata.definition.script.ScriptLog;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResult;
-import io.metadew.iesi.metadata.definition.script.result.ScriptResultElasticSearch;
 import io.metadew.iesi.metadata.definition.script.result.ScriptResultOutput;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
-import io.metadew.iesi.metadata.restore.RestoreExecution;
 import io.metadew.iesi.metadata.service.script.ScriptDesignTraceService;
 import org.apache.logging.log4j.*;
 
@@ -38,37 +33,22 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class ExecutionControl {
 
-    private final DelimitedFileBeatElasticSearchConnection elasticSearchConnection;
     private ExecutionRuntime executionRuntime;
-    private ExecutionLog executionLog;
-    private ExecutionTrace executionTrace;
-    private ScriptLog scriptLog;
     private String runId;
     private String envName;
     private boolean actionErrorStop = false;
     private boolean scriptExit = false;
-    private ScriptDesignTraceService scriptDesignTraceService;
-
     private Long lastProcessId;
 
-    private static final Marker SCRIPTMARKER = MarkerManager.getMarker("SCRIPT");
-
     private static final Logger LOGGER = LogManager.getLogger();
-    // Constructors
 
-    public ExecutionControl() throws ClassNotFoundException, NoSuchMethodException,
-            InvocationTargetException, InstantiationException, IllegalAccessException, SQLException {
-        this.scriptDesignTraceService = new ScriptDesignTraceService();
-        this.executionLog = new ExecutionLog();
-        this.executionTrace = new ExecutionTrace();
-        initializeRunId();
+    public ExecutionControl(String runId) throws NoSuchMethodException, IllegalAccessException, InstantiationException, SQLException, InvocationTargetException, ClassNotFoundException {
+        this.runId = runId;
         initializeExecutionRuntime(runId);
         this.lastProcessId = -1L;
-        this.elasticSearchConnection = new DelimitedFileBeatElasticSearchConnection();
     }
 
     @SuppressWarnings("unchecked")
@@ -115,14 +95,7 @@ public class ExecutionControl {
                     null
             );
             ScriptResultConfiguration.getInstance().insert(scriptResult);
-
-
-            this.scriptLog = new ScriptLog(runId, scriptExecution.getProcessId(), parentProcessId, scriptExecution.getScript().getId(),
-                    scriptExecution.getScript().getVersion().getNumber(), envName, "ACTIVE", LocalDateTime.now(), null);
-            this.executionLog.setLog(scriptLog);
-
-            // Trace the design of the script
-            scriptDesignTraceService.trace(scriptExecution);
+            ScriptDesignTraceService.getInstance().trace(scriptExecution);
         } catch (MetadataAlreadyExistsException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -168,7 +141,7 @@ public class ExecutionControl {
             );
             ActionResultConfiguration.getInstance().insert(actionResult);
 
-            this.logMessage(actionExecution, "action.status=" + ScriptRunStatus.SKIPPED.value(), Level.INFO);
+            LOGGER.info("action.status=" + ScriptRunStatus.SKIPPED.value());
         } catch (MetadataAlreadyExistsException e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
@@ -177,20 +150,6 @@ public class ExecutionControl {
         }
 
     }
-
-//    public void logStart(BackupExecution backupExecution) {
-//        initializeRunId();
-//    }
-
-    public void logStart(RestoreExecution restoreExecution) {
-        initializeRunId();
-    }
-
-//    public Long getNewProcessId() {
-//        Long processId = FrameworkRuntime.getInstance().getNextProcessId();
-//        logMessage(new IESIMessage("exec.processid=" + processId), Level.TRACE);
-//        return processId;
-//    }
 
     public Long getNextProcessId() {
         lastProcessId = lastProcessId + 1;
@@ -210,15 +169,6 @@ public class ExecutionControl {
             scriptResult.setStatus(status);
             scriptResult.setEndTimestamp(LocalDateTime.now());
             ScriptResultConfiguration.getInstance().update(scriptResult);
-
-            // Clear processing variables
-            // Only is the script is a root script, this will be cleaned
-            // In other scripts, the processing variables are still valid
-
-            scriptLog.setEnd(LocalDateTime.now());
-            scriptLog.setStatus(status);
-            executionLog.setLog(this.getScriptLog());
-            elasticSearchConnection.ingest(new ScriptResultElasticSearch(scriptResult));
 
             return status;
 
@@ -250,14 +200,6 @@ public class ExecutionControl {
         }
     }
 
-    public void logEnd(BackupExecution backupExecution) {
-
-    }
-
-    public void logEnd(RestoreExecution restoreExecution) {
-
-    }
-
     private String getStatus(ActionExecution actionExecution, ScriptExecution scriptExecution) {
         String status;
 
@@ -278,8 +220,7 @@ public class ExecutionControl {
             scriptExecution.getExecutionMetrics().increaseSkipCount(1);
         }
 
-        logMessage(actionExecution, "action.status=" + status, Level.INFO);
-
+        LOGGER.info( "action.status=" + status);
         return status;
 
     }
@@ -303,7 +244,7 @@ public class ExecutionControl {
             status = ScriptRunStatus.WARNING.value();
         }
 
-        logMessage(scriptExecution, "script.status=" + status, Level.INFO);
+        LOGGER.info("script.status=" + status);
 
         String output = scriptExecution.getExecutionControl().getExecutionRuntime().resolveVariables("#output#");
         if (output != null && !output.isEmpty()) {
@@ -313,20 +254,12 @@ public class ExecutionControl {
         return status;
     }
 
-    public void logExecutionOutput(ScriptExecution scriptExecution, String outputName, int outputValue) {
-        logExecutionOutput(scriptExecution, outputName, Integer.toString(outputValue));
-    }
-
-    public void logExecutionOutput(ScriptExecution scriptExecution, String outputName, long outputValue) {
-        logExecutionOutput(scriptExecution, outputName, Long.toString(outputValue));
-    }
-
     public void logExecutionOutput(ScriptExecution scriptExecution, String outputName, String outputValue) {
         // Redact any encrypted values
         outputValue = FrameworkCrypto.getInstance().redact(outputValue);
         outputValue = TextTools.shortenTextForDatabase(outputValue, 2000);
         try {
-            logMessage(scriptExecution, "script.output=" + outputName + ":" + outputValue, Level.INFO);
+            LOGGER.info("script.output=" + outputName + ":" + outputValue);
             ScriptResultOutput scriptResultOutput = new ScriptResultOutput(new ScriptResultOutputKey(runId, scriptExecution.getProcessId(), outputName), scriptExecution.getScript().getId(), outputValue);
             ScriptResultOutputConfiguration.getInstance().insert(scriptResultOutput);
         } catch (MetadataAlreadyExistsException e) {
@@ -335,14 +268,6 @@ public class ExecutionControl {
             LOGGER.warn("exception=" + e.getMessage());
             LOGGER.info("stacktrace=" + stackTrace.toString());
         }
-    }
-
-    public void logExecutionOutput(ActionExecution actionExecution, String outputName, int outputValue) {
-        logExecutionOutput(actionExecution, outputName, Integer.toString(outputValue));
-    }
-
-    public void logExecutionOutput(ActionExecution actionExecution, String outputName, long outputValue) {
-        logExecutionOutput(actionExecution, outputName, Long.toString(outputValue));
     }
 
     public void logExecutionOutput(ActionExecution actionExecution, String outputName, String outputValue) {
@@ -365,30 +290,6 @@ public class ExecutionControl {
         }
     }
 
-    // Log message
-    public void logMessage(ActionExecution actionExecution, String message, Level level) {
-//        if (!actionExecution.getScriptExecution().isRootScript() && level == Level.INFO || level == Level.ALL) {
-//            // do not display non-root info on info level
-//            // redirect to debug level
-//            level = Level.DEBUG;
-//        }
-        LOGGER.log(level, SCRIPTMARKER, message);
-    }
-
-    public void logMessage(IESIMessage message, Level level) {
-        LOGGER.log(level, SCRIPTMARKER, message);
-    }
-
-    public void logMessage(ScriptExecution scriptExecution, String message, Level level) {
-//        if (!scriptExecution.isRootScript() && level == Level.INFO || level == Level.ALL) {
-//            // do not display non-root info on info level
-//            // redirect to debug level
-//            level = Level.DEBUG;
-//        }
-
-        LOGGER.log(level, SCRIPTMARKER, message);
-    }
-
     public void endExecution() {
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         System.out.println("script.launcher.end");
@@ -397,12 +298,6 @@ public class ExecutionControl {
 
     public String getRunId() {
         return runId;
-    }
-
-    public void initializeRunId() {
-        this.runId = UUID.randomUUID().toString();
-        ThreadContext.put("runId", runId);
-        logMessage(new IESIMessage("exec.runid=" + runId), Level.INFO);
     }
 
     public String getEnvName() {
@@ -421,16 +316,8 @@ public class ExecutionControl {
         return executionRuntime;
     }
 
-    public ExecutionTrace getExecutionTrace() {
-        return executionTrace;
-    }
-
     public Long getLastProcessId() {
         return lastProcessId;
-    }
-
-    public ScriptLog getScriptLog() {
-        return scriptLog;
     }
 
     public void setScriptExit(boolean scriptExit) {

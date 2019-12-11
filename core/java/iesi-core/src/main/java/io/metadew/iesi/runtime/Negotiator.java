@@ -2,6 +2,7 @@ package io.metadew.iesi.runtime;
 
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.script.ScriptConfiguration;
 import io.metadew.iesi.metadata.definition.Context;
@@ -11,9 +12,12 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.ThreadContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -81,13 +85,14 @@ public class Negotiator {
         ScriptConfiguration scriptConfiguration = new ScriptConfiguration();
         Script script = scriptConfiguration.get("S2").get();
 
-
+        String runId = UUID.randomUUID().toString();
+        ThreadContext.put("runId", runId);
 
         ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
                 .script(script)
                 .actionSelectOperation(new ActionSelectOperation(""))
                 .environment("DEV")
-                .executionControl(new ExecutionControl())
+                .executionControl(new ExecutionControl(runId))
                 .exitOnCompletion(true)
                 .build();
 

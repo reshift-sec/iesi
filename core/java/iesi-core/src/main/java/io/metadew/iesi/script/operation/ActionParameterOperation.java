@@ -12,6 +12,8 @@ import io.metadew.iesi.script.execution.ActionExecution;
 import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ExecutionRuntime;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 
@@ -31,6 +33,7 @@ public class ActionParameterOperation {
     private String inputValue = "";
 
     private ActionTypeParameter actionTypeParameter;
+    private static final Logger LOGGER = LogManager.getLogger();
 
     // Constructors
     public ActionParameterOperation(ExecutionControl executionControl, ActionExecution actionExecution, String actionTypeName, String name) {
@@ -97,7 +100,7 @@ public class ActionParameterOperation {
         value = new Text(inputValue);
         
         resolvedInputValue = lookupSubroutine(resolvedInputValue);
-        executionControl.logMessage(actionExecution, "action.param=" + name + ":" + resolvedInputValue, Level.DEBUG);
+        LOGGER.debug("action.param=" + name + ":" + resolvedInputValue);
         resolvedInputValue = executionControl.getExecutionRuntime().resolveConceptLookup(resolvedInputValue).getValue();
         
         // perform lookup again after cross concept lookup
@@ -110,8 +113,7 @@ public class ActionParameterOperation {
             String impersonatedConnectionName = executionControl.getExecutionRuntime()
                     .getImpersonationOperation().getImpersonatedConnection(decryptedInputValue);
             if (!impersonatedConnectionName.equalsIgnoreCase("")) {
-                executionControl.logMessage(actionExecution, "action." + name
-                        + ".impersonate=" + this.getValue() + ":" + impersonatedConnectionName, Level.DEBUG);
+                LOGGER.debug("action." + name + ".impersonate=" + this.getValue() + ":" + impersonatedConnectionName);
                 resolvedInputValue = impersonatedConnectionName;
             }
         }

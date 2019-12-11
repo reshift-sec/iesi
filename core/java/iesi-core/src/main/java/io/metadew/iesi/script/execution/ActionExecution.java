@@ -1,7 +1,10 @@
 package io.metadew.iesi.script.execution;
 
+import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
+import io.metadew.iesi.metadata.service.action.ActionTraceService;
+import io.metadew.iesi.metadata.service.script.ScriptTraceService;
 import io.metadew.iesi.script.configuration.IterationInstance;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ComponentAttributeOperation;
@@ -16,6 +19,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ActionExecution {
 
@@ -175,7 +180,10 @@ public class ActionExecution {
 	}
 
 	public void traceDesignMetadata(HashMap<String, ActionParameterOperation> actionParameterOperationMap) {
-		executionControl.getExecutionTrace().setExecution(this, actionParameterOperationMap);
+		Map<String, DataType> parameters = actionParameterOperationMap.entrySet().stream()
+				.filter(entry -> entry.getValue().getValue() != null)
+				.collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getValue()));
+		ActionTraceService.getInstance().trace(this, parameters);
 	}
 
 	public Action getAction() {

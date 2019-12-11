@@ -22,7 +22,16 @@ import java.util.Map;
 public class ActionParameterTraceService {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public ActionParameterTraceService() {}
+    private static ActionParameterTraceService INSTANCE;
+
+    public synchronized static ActionParameterTraceService getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ActionParameterTraceService();
+        }
+        return INSTANCE;
+    }
+
+    private ActionParameterTraceService() {}
 
     public void trace(ActionExecution actionExecution, Map<String, DataType> actionParameterMap) {
         trace(actionExecution, "", actionParameterMap);

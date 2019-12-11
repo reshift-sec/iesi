@@ -97,7 +97,7 @@ public class ActionExecute {
 
 	public boolean executeAction(String actionName) {
 		try {
-			this.getExecutionControl().logMessage(this.getActionExecution(), "action.execute.start", Level.INFO);
+			LOGGER.info("action.execute.start");
 
 			// Get the action
 			Action action = null;
@@ -124,7 +124,8 @@ public class ActionExecute {
 			// In script execution --> create operation for logic
 			// Verify thread safe operations
 
-			this.getExecutionControl().logMessage(this.getActionExecution(), "action.execute.end", Level.INFO);
+
+			LOGGER.info("action.execute.end");
 			
 			this.getActionExecution().getActionControl().increaseSuccessCount();
 
