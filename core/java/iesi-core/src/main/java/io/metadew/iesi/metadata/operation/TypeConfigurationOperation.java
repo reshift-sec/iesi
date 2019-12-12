@@ -2,7 +2,7 @@ package io.metadew.iesi.metadata.operation;
 
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.framework.operation.FrameworkPluginOperation;
+import io.metadew.iesi.framework.operation.FrameworkPluginService;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -17,9 +17,9 @@ public class TypeConfigurationOperation {
         String conf = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.conf") + File.separator + configurationObject;
 
         if (!FileTools.exists(conf)) {
-            FrameworkPluginOperation frameworkPluginOperation = new FrameworkPluginOperation();
-            if (frameworkPluginOperation.verifyPlugins(configurationObject)) {
-                conf = frameworkPluginOperation.getPluginConfigurationFile();
+            FrameworkPluginService frameworkPluginService = new FrameworkPluginService();
+            if (frameworkPluginService.verifyPlugins(configurationObject)) {
+                conf = frameworkPluginService.getPluginConfigurationFile();
             } else {
                 throw new RuntimeException("action.type.notfound");
             }

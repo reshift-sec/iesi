@@ -4,8 +4,6 @@ import io.metadew.iesi.common.properties.PropertiesTools;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
-import io.metadew.iesi.framework.configuration.FrameworkKeywords;
-import io.metadew.iesi.framework.control.ProcessIdentifierController;
 import io.metadew.iesi.framework.definition.FrameworkRunIdentifier;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.ThreadContext;
@@ -64,79 +62,17 @@ public class FrameworkRuntime {
 	}
 
 
-//	public FrameworkRuntime(FrameworkConfiguration frameworkConfiguration, FrameworkRunIdentifier frameworkRunIdentifier) {
-//		this.setFrameworkConfiguration(frameworkConfiguration);
-//
-//		// Create run id
-//		if (frameworkRunIdentifier == null) {
-//			this.setFrameworkRunId(UUID.randomUUID().toString());
-//		} else {
-//			this.setFrameworkRunId(frameworkRunIdentifier.getScriptId());
-//		}
-//
-//		// Create run cache folder
-//		this.setRunCacheFolderName(
-//				this.getFrameworkConfiguration().getFolderConfiguration().getFolderAbsolutePath("run.cache")
-//						+ File.separator + this.getFrameworkRunId());
-//		FolderTools.createFolder(this.getRunCacheFolderName());
-//
-//		// Create spool folder
-//		this.setRunSpoolFolderName(
-//				this.getRunCacheFolderName() + File.separator + "spool");
-//		FolderTools.createFolder(this.getRunSpoolFolderName());
-//
-//		// Create localhost challenge
-//		this.setLocalHostChallenge(UUID.randomUUID().toString());
-//		this.setLocalHostChallengeFileName(FilenameUtils.normalize(this.getRunCacheFolderName() + File.separator + this.getLocalHostChallenge()  + ".fwk"));
-//		FileTools.appendToFile(this.getLocalHostChallengeFileName(), "", "localhost.challenge=" + this.getLocalHostChallenge());
-//
-//		// Initialize process id
-//		this.setProcessIdFileName(FilenameUtils.normalize(this.getRunCacheFolderName() + File.separator  + "processId.fwk"));
-//		Properties processIdProperties = new Properties();
-//		processIdProperties.put("processId", "-1");
-//		PropertiesTools.setProperties(this.getProcessIdFileName(), processIdProperties);
-//	}
-	
-	public Long getNextProcessId() {
-		String spoolFileName = runSpoolFolderName + File.separator + UUID.randomUUID().toString() + ".fwk";
-		ProcessIdentifierController.getNextProcessId(processIdFileName, spoolFileName);
-		Long processId = Long.parseLong(PropertiesTools.getProperty(spoolFileName, FrameworkKeywords.PROCESSID.value()));
-		FileTools.delete(spoolFileName);
-		return processId;
-	}
-	
-	
 	public void terminate() {
-		//FolderTools.deleteFolder(this.getRunCacheFolderName(), true);
+		FolderTools.deleteFolder(runCacheFolderName, true);
 	}
 
-	// Getters and setters
-	public String getRunCacheFolderName() {
-		return runCacheFolderName;
-	}
 
 	public String getFrameworkRunId() {
 		return frameworkRunId;
 	}
 
-	public void setFrameworkRunId(String frameworkRunId) {
-		this.frameworkRunId = frameworkRunId;
-	}
-
 	public String getLocalHostChallengeFileName() {
 		return localHostChallengeFileName;
-	}
-
-	public String getLocalHostChallenge() {
-		return localHostChallenge;
-	}
-
-	public String getProcessIdFileName() {
-		return processIdFileName;
-	}
-
-	public String getRunSpoolFolderName() {
-		return runSpoolFolderName;
 	}
 
 }

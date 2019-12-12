@@ -44,8 +44,6 @@ public class DelimitedFile {
 		this.setGenerationOutputExecution(generationOutputExecution);
 	}
 
-	//
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public boolean execute() {
 		try {
 			LOGGER.info("generation.output.type=" + this.getGenerationOutputTypeName());
@@ -100,13 +98,13 @@ public class DelimitedFile {
 						.executeQuery(query);
 				OutputTools.createOutputFile(fileName, folderName, crs,
 						this.getSeparator().getValue(),
-						(this.getIncludeFieldNames().getValue().trim().equalsIgnoreCase("y") ? true : false));
+						(this.getIncludeFieldNames().getValue().trim().equalsIgnoreCase("y")));
 
 			} catch (Exception e) {
 				throw new RuntimeException("Issue generating output: " + e, e);
 			}
 			
-			ArrayList<String> controlsList = new ArrayList();
+			ArrayList<String> controlsList = new ArrayList<>();
 			String[] parts = this.getControls().getValue().split(",");
 			for (int i = 0; i < parts.length; i++) {
 				String innerpart = parts[i];

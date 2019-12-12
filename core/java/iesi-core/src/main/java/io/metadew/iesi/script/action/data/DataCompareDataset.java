@@ -3,7 +3,6 @@ package io.metadew.iesi.script.action.data;
 import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.datatypes.dataset.Dataset;
 import io.metadew.iesi.datatypes.text.Text;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.mapping.MappingConfiguration;
 import io.metadew.iesi.metadata.definition.Transformation;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
@@ -108,7 +107,7 @@ public class DataCompareDataset {
 
 
         long errorsDetected = 0;
-        MappingConfiguration mappingConfiguration = new MappingConfiguration(FrameworkInstance.getInstance());
+        MappingConfiguration mappingConfiguration = new MappingConfiguration();
         Mapping mapping = mappingConfiguration.getMapping(mappingName);
         for (Transformation transformation : mapping.getTransformations()) {
 

@@ -22,9 +22,8 @@ public class DbMssqlConnectionOperation {
     public DbMssqlConnectionOperation() {
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public Database getDatabase(Connection connection) {
-        this.setMissingMandatoryFieldsList(new ArrayList());
+        this.setMissingMandatoryFieldsList(new ArrayList<>());
 
         Database database = null;
 

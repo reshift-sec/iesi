@@ -10,6 +10,11 @@ public class FrameworkPlugin {
 
     }
 
+    public FrameworkPlugin(String name, String path) {
+        this.name = name;
+        this.path = path;
+    }
+
     //Getters and Setters
     public String getName() {
         return name;

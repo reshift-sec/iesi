@@ -9,10 +9,7 @@ import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.action.type.ActionType;
 import io.metadew.iesi.metadata.definition.component.ComponentType;
 import io.metadew.iesi.metadata.definition.connection.ConnectionType;
-import io.metadew.iesi.metadata.definition.dataframe.DataframeItemType;
-import io.metadew.iesi.metadata.definition.dataframe.DataframeType;
 import io.metadew.iesi.metadata.definition.generation.*;
-import io.metadew.iesi.metadata.definition.ledger.LedgerType;
 import io.metadew.iesi.metadata.definition.script.type.ScriptType;
 import io.metadew.iesi.metadata.definition.subroutine.SubroutineType;
 import io.metadew.iesi.metadata.definition.user.UserType;
@@ -226,20 +223,6 @@ public class AssemblyExecution {
                     ScriptType scriptType = objectMapper.convertValue(dataObject.getData(), ScriptType.class);
                     dataObjectOutput = new DataObject("ScriptType", scriptType);
                     name = scriptType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("ledgertype")) {
-                    LedgerType ledgerType = objectMapper.convertValue(dataObject.getData(), LedgerType.class);
-                    dataObjectOutput = new DataObject("LedgerType", ledgerType);
-                    name = ledgerType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("dataframetype")) {
-                    DataframeType dataframeType = objectMapper.convertValue(dataObject.getData(),
-                            DataframeType.class);
-                    dataObjectOutput = new DataObject("DataframeType", dataframeType);
-                    name = dataframeType.getName();
-                } else if (dataObject.getType().equalsIgnoreCase("dataframeitemtype")) {
-                    DataframeItemType dataframeItemType = objectMapper.convertValue(dataObject.getData(),
-                            DataframeItemType.class);
-                    dataObjectOutput = new DataObject("DataframeItemType", dataframeItemType);
-                    name = dataframeItemType.getName();
                 } else if (dataObject.getType().equalsIgnoreCase("usertype")) {
                     UserType userType = objectMapper.convertValue(dataObject.getData(), UserType.class);
                     dataObjectOutput = new DataObject("UserType", userType);

@@ -1,25 +1,27 @@
 package io.metadew.iesi.framework.operation;
 
+import io.metadew.iesi.common.config.ConfigFile;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
+import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
+import io.metadew.iesi.framework.definition.FrameworkPlugin;
 import io.metadew.iesi.framework.execution.FrameworkControl;
-import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 
-public class FrameworkPluginOperation {
+public class FrameworkPluginService {
 
     private String pluginConfigurationFile;
 
-    public FrameworkPluginOperation() {
+    public FrameworkPluginService() {
     }
 
     public boolean verifyPlugins(String configurationToVerify) {
         boolean result = false;
-        for (FrameworkPluginConfiguration frameworkPluginConfiguration : FrameworkControl.getInstance().getFrameworkPluginConfigurationList()) {
+        for (FrameworkPlugin frameworkPlugin : FrameworkControl.getInstance().getFrameworkPlugins()) {
             StringBuilder configurationFile = new StringBuilder();
-            configurationFile.append(frameworkPluginConfiguration.getFrameworkPlugin().getPath());
+            configurationFile.append(frameworkPlugin.getPath());
             configurationFile.append(FrameworkFolderConfiguration.getInstance().getFolderPath("metadata.conf"));
             configurationFile.append(File.separator);
             configurationFile.append(configurationToVerify);
@@ -31,6 +33,11 @@ public class FrameworkPluginOperation {
             }
         }
         return result;
+    }
+
+    public FrameworkPlugin getFrameworkPlugin(ConfigFile configFile) {
+        return new FrameworkPlugin(configFile.getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("plugin.name").get()).get().toLowerCase(),
+                FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("plugins") + File.separator + configFile.getProperty(FrameworkSettingConfiguration.getInstance().getSettingPath("plugin.name").get()).get());
     }
 
     // Getters and setters

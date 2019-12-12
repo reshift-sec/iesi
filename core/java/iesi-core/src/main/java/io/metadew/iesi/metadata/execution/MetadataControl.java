@@ -6,11 +6,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Class to centralize the shared metadata that will be used by the framework
- *
- * @author peter.billen
- */
 public class MetadataControl {
 
     private DesignMetadataRepository designMetadataRepository;
@@ -20,7 +15,6 @@ public class MetadataControl {
     private TraceMetadataRepository traceMetadataRepository;
     private ResultMetadataRepository resultMetadataRepository;
     private MonitorMetadataRepository monitorMetadataRepository;
-    private LedgerMetadataRepository ledgerMetadataRepository;
     private CatalogMetadataRepository catalogMetadataRepository;
 
 
@@ -39,7 +33,7 @@ public class MetadataControl {
     public void init(DesignMetadataRepository designMetadataRepository, ConnectivityMetadataRepository connectivityMetadataRepository,
                      ControlMetadataRepository controlMetadataRepository, TraceMetadataRepository traceMetadataRepository,
                      ResultMetadataRepository resultMetadataRepository, MonitorMetadataRepository monitorMetadataRepository,
-                     LedgerMetadataRepository ledgerMetadataRepository, CatalogMetadataRepository catalogMetadataRepository,
+                     CatalogMetadataRepository catalogMetadataRepository,
                      ExecutionServerMetadataRepository executionServerMetadataRepository) {
         this.designMetadataRepository = designMetadataRepository;
         this.connectivityMetadataRepository = connectivityMetadataRepository;
@@ -47,7 +41,6 @@ public class MetadataControl {
         this.traceMetadataRepository = traceMetadataRepository;
         this.resultMetadataRepository = resultMetadataRepository;
         this.monitorMetadataRepository = monitorMetadataRepository;
-        this.ledgerMetadataRepository = ledgerMetadataRepository;
         this.catalogMetadataRepository = catalogMetadataRepository;
         this.executionServerMetadataRepository = executionServerMetadataRepository;
         // Check if repositories are correctly set
@@ -112,9 +105,6 @@ public class MetadataControl {
         return monitorMetadataRepository;
     }
 
-    public LedgerMetadataRepository getLedgerMetadataRepository() {
-        return ledgerMetadataRepository;
-    }
 
     public ControlMetadataRepository getControlMetadataRepository() {
         return controlMetadataRepository;
@@ -132,7 +122,6 @@ public class MetadataControl {
         metadataRepositories.add(resultMetadataRepository);
         metadataRepositories.add(designMetadataRepository);
         metadataRepositories.add(monitorMetadataRepository);
-        metadataRepositories.add(ledgerMetadataRepository);
         metadataRepositories.add(controlMetadataRepository);
         metadataRepositories.add(executionServerMetadataRepository);
         return metadataRepositories;

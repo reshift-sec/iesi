@@ -47,7 +47,6 @@ public class ExecutionRuntime {
     private String runCacheFolderName;
 
     //private HashMap<String, StageOperation> stageOperationMap;
-    private HashMap<String, RepositoryOperation> repositoryOperationMap;
     private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, KeyValueDataset> datasetMap;
     private HashMap<String, RWorkspace> RWorkspaceMap;
@@ -78,7 +77,6 @@ public class ExecutionRuntime {
 
         // Initialize maps
         stageOperationMap = new HashMap<>();
-        repositoryOperationMap = new HashMap<>();
         iterationOperationMap = new HashMap<>();
         executionRuntimeExtensionMap = new HashMap<>();
 
@@ -569,12 +567,12 @@ public class ExecutionRuntime {
         return this.getStageOperationMap().get(stageName);
     }
 
-    // Repository Management
-    public void setRepository(ExecutionControl executionControl, String repositoryReferenceName, String repositoryName, String repositoryInstanceName, String repositoryInstanceLabels) throws SQLException {
-        RepositoryOperation repositoryOperation = new RepositoryOperation(executionControl, repositoryName,
-                repositoryInstanceName, repositoryInstanceLabels);
-        this.getRepositoryOperationMap().put(repositoryReferenceName, repositoryOperation);
-    }
+//    // Repository Management
+//    public void setRepository(ExecutionControl executionControl, String repositoryReferenceName, String repositoryName, String repositoryInstanceName, String repositoryInstanceLabels) throws SQLException {
+//        RepositoryOperation repositoryOperation = new RepositoryOperation(executionControl, repositoryName,
+//                repositoryInstanceName, repositoryInstanceLabels);
+//        this.getRepositoryOperationMap().put(repositoryReferenceName, repositoryOperation);
+//    }
 
     public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) throws IOException, SQLException {
         datasetMap.put(referenceName,
@@ -631,9 +629,9 @@ public class ExecutionRuntime {
         return iterationVariableConfiguration;
     }
 
-    public HashMap<String, RepositoryOperation> getRepositoryOperationMap() {
-        return repositoryOperationMap;
-    }
+//    public HashMap<String, RepositoryOperation> getRepositoryOperationMap() {
+//        return repositoryOperationMap;
+//    }
 
     public HashMap<String, VariableInstruction> getVariableInstructions() {
         return variableInstructions;

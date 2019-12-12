@@ -1,16 +1,12 @@
 package io.metadew.iesi.framework.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.metadew.iesi.connection.tools.FileTools;
-import io.metadew.iesi.metadata.configuration.FrameworkPluginConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.generation.GenerationRuleType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 
 public class FrameworkGenerationRuleTypeConfiguration {
 
@@ -36,36 +32,6 @@ public class FrameworkGenerationRuleTypeConfiguration {
 			if (dataObject.getType().equalsIgnoreCase("generationruletype")) {
 				GenerationRuleType generationRuleType = objectMapper.convertValue(dataObject.getData(), GenerationRuleType.class);
 				this.getGenerationRuleTypeMap().put(generationRuleType.getName().toLowerCase(), generationRuleType);
-			}
-		}
-	}
-
-	public void setGenerationRuleTypesFromPlugins(FrameworkFolderConfiguration frameworkFolderConfiguration,
-			List<FrameworkPluginConfiguration> frameworkPluginConfigurationList) {
-		for (FrameworkPluginConfiguration frameworkPluginConfiguration : frameworkPluginConfigurationList) {
-			StringBuilder initFilePath = new StringBuilder();
-			initFilePath.append(frameworkPluginConfiguration.getFrameworkPlugin().getPath());
-			initFilePath.append(frameworkFolderConfiguration.getFolderPath("metadata.conf"));
-			initFilePath.append(File.separator);
-			initFilePath.append("GenerationRuleTypes.json");
-			String filePath = FilenameUtils.normalize(initFilePath.toString());
-
-			if (FileTools.exists(filePath)) {
-				DataObjectOperation dataObjectOperation = new DataObjectOperation();
-				dataObjectOperation.setInputFile(filePath);
-				dataObjectOperation.parseFile();
-				ObjectMapper objectMapper = new ObjectMapper();
-				for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
-					if (dataObject.getType().equalsIgnoreCase("generationruletype")) {
-						GenerationRuleType generationRuleType = objectMapper.convertValue(dataObject.getData(), GenerationRuleType.class);
-						if (this.getGenerationRuleTypeMap().containsKey(generationRuleType.getName().toLowerCase())) {
-							//System.out.println("item already present - skipping " + generationRuleType.getScriptName());
-							// TODO provide startup alert
-						} else {
-							this.getGenerationRuleTypeMap().put(generationRuleType.getName().toLowerCase(), generationRuleType);
-						}
-					}
-				}
 			}
 		}
 	}

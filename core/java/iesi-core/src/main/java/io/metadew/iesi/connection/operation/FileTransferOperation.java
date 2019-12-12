@@ -8,7 +8,6 @@ import io.metadew.iesi.connection.host.ShellCommandSettings;
 import io.metadew.iesi.connection.operation.filetransfer.FileToTransfer;
 import io.metadew.iesi.connection.operation.filetransfer.FileTransferResult;
 import io.metadew.iesi.connection.operation.filetransfer.FileTransfered;
-import io.metadew.iesi.framework.execution.FrameworkLog;
 import io.metadew.iesi.metadata.definition.connection.Connection;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -28,12 +27,11 @@ public class FileTransferOperation {
     }
 
     // File Transfer
-    @SuppressWarnings({"rawtypes", "unchecked", "unused"})
     public FileTransferResult transferLocalToRemote(String sourceFilePath, String sourceFileName,
                                                     Connection sourceConnection, String targetFilePath, String targetFileName,
                                                     Connection targetConnection) {
 
-        List<FileTransfered> fileTransferedList = new ArrayList();
+        List<FileTransfered> fileTransferedList = new ArrayList<>();
         ConnectionOperation connectionOperation = new ConnectionOperation();
         HostConnection sourceConnectionConnection = connectionOperation.getHostConnection(sourceConnection);
         LOGGER.trace("fho.transfer.source.connection=" + sourceConnection.getName());
@@ -65,7 +63,7 @@ public class FileTransferOperation {
                         c.put(file.getName(), file.getName());
                         FileTransfered fileTransfered = new FileTransfered(sourceFilePath, file.getName(),
                                 targetFilePath, file.getName());
-                        FrameworkLog.getInstance().log(fileTransfered, Level.TRACE);
+                        log(fileTransfered, Level.TRACE);
                         fileTransferedList.add(fileTransfered);
                         filepath = sourceFilePath + File.separator + file.getName();
                     }
@@ -88,7 +86,7 @@ public class FileTransferOperation {
                         c.put(file.getName(), file.getName());
                         FileTransfered fileTransfered = new FileTransfered(sourceFilePath, file.getName(),
                                 targetFilePath, file.getName());
-                        FrameworkLog.getInstance().log(fileTransfered, Level.TRACE);
+                        log(fileTransfered, Level.TRACE);
                         fileTransferedList.add(fileTransfered);
                         filepath = sourceFilePath + File.separator + file.getName();
                     }
@@ -111,7 +109,7 @@ public class FileTransferOperation {
                         c.put(file.getName(), targetFileName);
                         FileTransfered fileTransfered = new FileTransfered(sourceFilePath, file.getName(),
                                 targetFilePath, targetFileName);
-                        FrameworkLog.getInstance().log(fileTransfered, Level.TRACE);
+                        log(fileTransfered, Level.TRACE);
                         fileTransferedList.add(fileTransfered);
                         filepath = sourceFileName + File.separator + file.getName();
                     }
@@ -184,7 +182,7 @@ public class FileTransferOperation {
                             c.get(fileToTransfer.getFileName(), fileToTransfer.getFileName());
                             FileTransfered fileTransfered = new FileTransfered(sourceFilePath,
                                     fileToTransfer.getFileName(), targetFilePath, fileToTransfer.getFileName());
-                            FrameworkLog.getInstance().log(fileTransfered, Level.TRACE);
+                            log(fileTransfered, Level.TRACE);
                             fileTransferedList.add(fileTransfered);
                             filepath = sourceFilePath + "/" + fileToTransfer.getFileName();
                         }
@@ -219,7 +217,7 @@ public class FileTransferOperation {
                             c.get(fileToTransfer.getFileName(), fileToTransfer.getFileName());
                             FileTransfered fileTransfered = new FileTransfered(sourceFilePath,
                                     fileToTransfer.getFileName(), targetFilePath, fileToTransfer.getFileName());
-                            FrameworkLog.getInstance().log(fileTransfered, Level.TRACE);
+                            log(fileTransfered, Level.TRACE);
                             fileTransferedList.add(fileTransfered);
                             filepath = sourceFilePath + "/" + fileToTransfer.getFileName();
                         }
@@ -253,7 +251,7 @@ public class FileTransferOperation {
                             c.get(fileToTransfer.getFileName(), targetFileName);
                             FileTransfered fileTransfered = new FileTransfered(sourceFilePath,
                                     fileToTransfer.getFileName(), targetFilePath, targetFileName);
-                            FrameworkLog.getInstance().log(fileTransfered, Level.TRACE);
+                            log(fileTransfered, Level.TRACE);
                             fileTransferedList.add(fileTransfered);
                             filepath = sourceFilePath + "/" + targetFileName;
                         }
@@ -298,12 +296,11 @@ public class FileTransferOperation {
         return fileTransferResult;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked", "unused"})
     private FileTransferResult transferLocalToLocalWindows(String sourceFilePath, String sourceFileName,
                                                            HostConnection sourceConnectionConnection, String targetFilePath, String targetFileName,
                                                            HostConnection targetConnectionConnection) {
 
-        List<FileTransfered> fileTransferedList = new ArrayList();
+        List<FileTransfered> fileTransferedList = new ArrayList<>();
         ShellCommandSettings shellCommandSettings = new ShellCommandSettings();
 
         try {
@@ -386,4 +383,10 @@ public class FileTransferOperation {
         throw new RuntimeException("method not supported");
     }
 
+    public void log(FileTransfered fileTransfered, Level level) {
+        LOGGER.log(level, "source.path=" + fileTransfered.getSourceFilePath());
+        LOGGER.log(level, "source.file=" + fileTransfered.getSourceFileName());
+        LOGGER.log(level, "target.path=" + fileTransfered.getTargetFilePath());
+        LOGGER.log(level, "target.file=" + fileTransfered.getTargetFileName());
+    }
 }

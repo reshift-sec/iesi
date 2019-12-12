@@ -1,7 +1,6 @@
 package io.metadew.iesi.framework.crypto;
 
 import io.metadew.iesi.framework.crypto.algo.AESEncryptBasic;
-import io.metadew.iesi.framework.execution.FrameworkLog;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -147,7 +146,6 @@ public class FrameworkCrypto {
             replaceValue = this.decrypt(variable_char + midBit + variable_char_close);
             if (replaceValue != null) {
                 input = input.replace(variable_char + midBit + variable_char_close, replaceValue);
-                FrameworkLog.getInstance().getEncryptionRedactionList().add(replaceValue);
             }
             temp = temp.substring(closePos + 1, temp.length());
 

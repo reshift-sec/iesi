@@ -2,7 +2,6 @@ package io.metadew.iesi.metadata.configuration.generation;
 
 import io.metadew.iesi.connection.tools.SQLTools;
 import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
-import io.metadew.iesi.metadata.definition.ListObject;
 import io.metadew.iesi.metadata.definition.generation.*;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 
@@ -306,28 +305,6 @@ public class GenerationConfiguration {
         return generation;
     }
 
-    // Get
-    public ListObject getGenerations() {
-        List<Generation> generationList = new ArrayList<>();
-        CachedRowSet crs = null;
-        String query = "select GEN_NM, GEN_DSC from " + MetadataControl.getInstance().getDesignMetadataRepository().getTableNameByLabel("Generations")
-                + " order by GEN_NM ASC";
-        crs = MetadataControl.getInstance().getDesignMetadataRepository().executeQuery(query, "reader");
-        GenerationConfiguration generationConfiguration = new GenerationConfiguration();
-        try {
-            String generationName = "";
-            while (crs.next()) {
-                generationName = crs.getString("GEN_NM");
-                generationList.add(generationConfiguration.getGeneration(generationName));
-            }
-            crs.close();
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
-
-        return new ListObject(FrameworkObjectConfiguration.getFrameworkObjectType(new Generation()), generationList);
-    }
 
     // Exists
     public boolean exists() {

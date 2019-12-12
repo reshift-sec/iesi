@@ -7,7 +7,6 @@ import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.configuration.MetadataConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.ImpersonationDoesNotExistException;
-import io.metadew.iesi.metadata.definition.ListObject;
 import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
 import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
 import io.metadew.iesi.metadata.execution.MetadataControl;
@@ -261,28 +260,6 @@ public class ImpersonationConfiguration extends MetadataConfiguration {
         }
 
         return result;
-    }
-
-    public ListObject getImpersonations() {
-        List<Impersonation> impersonationList = new ArrayList<>();
-        CachedRowSet crs = null;
-        String query = "select IMP_NM from " + MetadataControl.getInstance().getConnectivityMetadataRepository().getTableNameByLabel("Impersonations")
-                + " order by IMP_NM ASC";
-        crs = MetadataControl.getInstance().getConnectivityMetadataRepository().executeQuery(query, "reader");
-        ImpersonationConfiguration impersonationConfiguration = new ImpersonationConfiguration();
-        try {
-            String impersonationName = "";
-            while (crs.next()) {
-                impersonationName = crs.getString("IMP_NM");
-                impersonationConfiguration.getImpersonation(impersonationName).ifPresent(impersonationList::add);
-            }
-            crs.close();
-        } catch (Exception e) {
-            StringWriter StackTrace = new StringWriter();
-            e.printStackTrace(new PrintWriter(StackTrace));
-        }
-
-        return new ListObject(FrameworkObjectConfiguration.getFrameworkObjectType(new Impersonation()), impersonationList);
     }
 
     public void deleteImpersonation(String impersonationName) {

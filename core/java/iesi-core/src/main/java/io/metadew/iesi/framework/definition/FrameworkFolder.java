@@ -14,6 +14,15 @@ public class FrameworkFolder {
 
     }
 
+    public FrameworkFolder(String name, String path, String absolutePath, String label, String description, String permissions) {
+        this.name = name;
+        this.path = path;
+        this.absolutePath = absolutePath;
+        this.label = label;
+        this.description = description;
+        this.permissions = permissions;
+    }
+
     //Getters and Setters
     public String getName() {
         return name;

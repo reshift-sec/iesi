@@ -30,7 +30,7 @@ public class IesiConfiguration {
     @Bean
     @Order(0)
     public FrameworkInstance frameworkInstance(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext frameworkExecutionContext) throws SQLException {
-        FrameworkInstance.getInstance().init(frameworkInitializationFile, frameworkExecutionContext, frameworkHome);
+        FrameworkInstance.getInstance().init(frameworkInitializationFile, frameworkExecutionContext);
         return FrameworkInstance.getInstance();
     }
 

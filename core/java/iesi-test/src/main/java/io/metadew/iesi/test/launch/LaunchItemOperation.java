@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.metadew.iesi.metadata.definition.DataObject;
 import org.apache.commons.io.FilenameUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -15,7 +16,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.metadata.configuration.DataObjectConfiguration;
-import io.metadew.iesi.metadata.definition.DataObject;
 
 public class LaunchItemOperation {
 

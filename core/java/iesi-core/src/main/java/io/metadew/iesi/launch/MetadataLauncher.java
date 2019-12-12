@@ -7,13 +7,11 @@ import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.execution.FrameworkRuntime;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.backup.BackupExecution;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
-import io.metadew.iesi.metadata.restore.RestoreExecution;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.ThreadContext;
 
@@ -136,55 +134,55 @@ public class MetadataLauncher {
                     endLauncher(1, true);
             }
         }
-        // Backup
-        if (line.hasOption("backup")) {
-            for (MetadataRepository metadataRepository : metadataRepositories) {
-                writeHeaderMessage();
-                System.out.println("Option -backup (backup) selected");
-
-                // Get path value
-                String path = "";
-                if (line.hasOption("path")) {
-                    path = line.getOptionValue("path");
-                    System.out.println("Option -path (path) value = " + path);
-                } else {
-                    System.out.println("Option -path (path) not provided");
-                    writeFooterMessage();
-                    endLauncher(1, true);
-                }
-
-                // Execute
-                BackupExecution backupExecution = new BackupExecution();
-                backupExecution.execute(path);
-                writeFooterMessage();
-                endLauncher(0, true);
-            }
-        }
+//        // Backup
+//        if (line.hasOption("backup")) {
+//            for (MetadataRepository metadataRepository : metadataRepositories) {
+//                writeHeaderMessage();
+//                System.out.println("Option -backup (backup) selected");
+//
+//                // Get path value
+//                String path = "";
+//                if (line.hasOption("path")) {
+//                    path = line.getOptionValue("path");
+//                    System.out.println("Option -path (path) value = " + path);
+//                } else {
+//                    System.out.println("Option -path (path) not provided");
+//                    writeFooterMessage();
+//                    endLauncher(1, true);
+//                }
+//
+//                // Execute
+//                BackupExecution backupExecution = new BackupExecution();
+//                backupExecution.execute(path);
+//                writeFooterMessage();
+//                endLauncher(0, true);
+//            }
+//        }
 
         // Restore
-        if (line.hasOption("restore")) {
-            for (MetadataRepository metadataRepository : metadataRepositories) {
-                writeHeaderMessage();
-                System.out.println("Option -restore (restore) selected");
-                System.out.println();
-
-                // Get path value
-                String path = "";
-                if (line.hasOption("path")) {
-                    path = line.getOptionValue("path");
-                    System.out.println("Option -path (path) value = " + path);
-                } else {
-                    System.out.println("Option -path (path) missing");
-                    endLauncher(1, true);
-                }
-
-                // Execute
-                RestoreExecution restoreExecution = new RestoreExecution();
-                restoreExecution.execute(path);
-                writeFooterMessage();
-                endLauncher(0, true);
-            }
-        }
+//        if (line.hasOption("restore")) {
+//            for (MetadataRepository metadataRepository : metadataRepositories) {
+//                writeHeaderMessage();
+//                System.out.println("Option -restore (restore) selected");
+//                System.out.println();
+//
+//                // Get path value
+//                String path = "";
+//                if (line.hasOption("path")) {
+//                    path = line.getOptionValue("path");
+//                    System.out.println("Option -path (path) value = " + path);
+//                } else {
+//                    System.out.println("Option -path (path) missing");
+//                    endLauncher(1, true);
+//                }
+//
+//                // Execute
+//                RestoreExecution restoreExecution = new RestoreExecution();
+//                restoreExecution.execute(path);
+//                writeFooterMessage();
+//                endLauncher(0, true);
+//            }
+//        }
 
         // Drop
         if (line.hasOption("drop")) {
