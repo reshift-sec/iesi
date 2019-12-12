@@ -19,6 +19,6 @@ done
 
 cd $lib_dir
 
-java -Dlog4j.configurationFile=$lib_dir/log4j2.xml -cp $classpath io.metadew.iesi.launch.ServerLauncher "$@"
+java -Dlog4j.configurationFile=$lib_dir/log4j2.xml -cp $classpath io.metadew.iesi.launch.Launcher -server "$@"
 
 cd $current_dir

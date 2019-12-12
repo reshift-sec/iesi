@@ -19,6 +19,6 @@ set CLASSPATH=!CLASSPATH!
 :: go to library directory to allow for reflections to work properly
 cd %LIB_DIR%
 
-java -cp !CLASSPATH! io.metadew.iesi.launch.ScriptLauncher %*
+java -cp !CLASSPATH! io.metadew.iesi.launch.Launcher -script %*
 
 cd !CURRENT_DIR!

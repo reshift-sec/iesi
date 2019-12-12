@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class UnitTest_2 {
 	
-	public static void main(String[] args) throws ExecutionRequestBuilderException, ScriptExecutionRequestBuilderException, MetadataAlreadyExistsException, SQLException, MetadataDoesNotExistException, ParseException {
+	public static void main(String[] args) throws Exception {
 		String inputArgs[] = new String[6];
 		inputArgs[0] = ("-script");
 		inputArgs[1] = ("ut-2");
@@ -18,6 +18,6 @@ public class UnitTest_2 {
 		inputArgs[3] = ("dev");
 		inputArgs[4] = ("-impersonation");
 		inputArgs[5] = ("ut-ds-1");
-		io.metadew.iesi.launch.ScriptLauncher.main(inputArgs);
+		io.metadew.iesi.launch.Launcher.main(inputArgs);
 	}
 }

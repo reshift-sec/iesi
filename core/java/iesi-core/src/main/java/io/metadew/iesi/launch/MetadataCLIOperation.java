@@ -12,56 +12,50 @@ import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.operation.MetadataRepositoryOperation;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
-import org.apache.commons.cli.*;
-import org.apache.logging.log4j.ThreadContext;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The metadata launcher is entry point to launch all configuration management
- * operations.
- *
- * @author peter.billen
- */
-public class MetadataLauncher {
+public class MetadataCLIOperation extends CLIOperation {
+    private final static Options options = new Options()
+            .addOption(Option.builder("metadata").desc("perform metadata operations").build())
+            .addOption(new Option("help", "print this message"))
+            .addOption(Option.builder("ini").hasArg().desc("define the initialization file").build())
+            .addOption(Option.builder("type").hasArg().desc("define the type of metadata repository").required().build())
+            .addOption(Option.builder("config").hasArg().desc("define the metadata repository config").build())
+            .addOption(Option.builder("backup").desc("create a backup of the entire metadata repository").build())
+            .addOption(Option.builder("restore").desc("restore a backup of the metadata repository").build())
+            .addOption(Option.builder("path").hasArg().desc("path to be used to for backup or restore").build())
+            .addOption(Option.builder("drop").desc("drop all metadata tables in the metadata repository").build())
+            .addOption(Option.builder("create").desc("create all metadata tables in the metadata repository").build())
+            .addOption(Option.builder("clean").desc("clean all tables in the metadata repository").build())
+            .addOption(Option.builder("load").desc("load metadata file from the input folder into the metadata repository").build())
+            .addOption(Option.builder("ddl").desc("generate ddl output instead of execution in the metadata repository, to be combined with options: create, drop").build())
+            .addOption(Option.builder("files").hasArg().desc(
+                    "filename(s) to load from the input folder into the metadata repository\n" +
+                            "Following options are possible:\n" +
+                            "-(1) a single file name including extension\n" +
+                            "--Example: Script.json\n" +
+                            "-(2) list of files separated by commas \n" +
+                            "--Example: Script1.json,Script2.json\n" +
+                            "-(3) a regular expression written as function =regex([your expression])\n" +
+                            "--Example: =regex(.+\\json) > this will load all files").build())
+            .addOption(Option.builder("exit").hasArg().desc("define if an explicit exit is required").build());
+    
+    
+    public MetadataCLIOperation(String[] args) throws ParseException {
+        super(args);
+    }
 
-    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, ParseException, SQLException {
-        ThreadContext.clearAll();
-
-        Options options = new Options().addOption(new Option("help", "print this message"))
-                .addOption(Option.builder("ini").hasArg().desc("define the initialization file").build())
-                .addOption(Option.builder("type").hasArg().desc("define the type of metadata repository").required().build())
-                .addOption(Option.builder("config").hasArg().desc("define the metadata repository config").build())
-                .addOption(Option.builder("backup").desc("create a backup of the entire metadata repository").build())
-                .addOption(Option.builder("restore").desc("restore a backup of the metadata repository").build())
-                .addOption(Option.builder("path").hasArg().desc("path to be used to for backup or restore").build())
-                .addOption(Option.builder("drop").desc("drop all metadata tables in the metadata repository").build())
-                .addOption(Option.builder("create").desc("create all metadata tables in the metadata repository").build())
-                .addOption(Option.builder("clean").desc("clean all tables in the metadata repository").build())
-                .addOption(Option.builder("load").desc("load metadata file from the input folder into the metadata repository").build())
-                .addOption(Option.builder("ddl").desc("generate ddl output instead of execution in the metadata repository, to be combined with options: create, drop").build())
-                .addOption(Option.builder("files").hasArg().desc(
-                        "filename(s) to load from the input folder into the metadata repository\n" +
-                                "Following options are possible:\n" +
-                                "-(1) a single file name including extension\n" +
-                                "--Example: Script.json\n" +
-                                "-(2) list of files separated by commas \n" +
-                                "--Example: Script1.json,Script2.json\n" +
-                                "-(3) a regular expression written as function =regex([your expression])\n" +
-                                "--Example: =regex(.+\\json) > this will load all files").build())
-                .addOption(Option.builder("exit").hasArg().desc("define if an explicit exit is required").build());
-
-
-        // create the parser
-        CommandLineParser parser = new DefaultParser();
-        CommandLine line = parser.parse(options, args);
-
-        if (line.hasOption("help")) {
+    @Override
+    public void performCLIOperation() throws Exception {
+        if (getCommandLine().hasOption("help")) {
             // automatically generate the help statement
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("[command]", options);
@@ -69,13 +63,13 @@ public class MetadataLauncher {
         }
 
         // Define the exit behaviour
-        boolean exit = !line.hasOption("exit") || line.getOptionValue("exit").equalsIgnoreCase("y") || line.getOptionValue("exit").equalsIgnoreCase("true");
+        boolean exit = !getCommandLine().hasOption("exit") || getCommandLine().getOptionValue("exit").equalsIgnoreCase("y") || getCommandLine().getOptionValue("exit").equalsIgnoreCase("true");
 
         // Create the framework instance
         FrameworkInitializationFile frameworkInitializationFile = new FrameworkInitializationFile();
-        if (line.hasOption("ini")) {
-            System.out.println("Option -ini (ini) value = " + line.getOptionValue("ini"));
-            frameworkInitializationFile.setName(line.getOptionValue("ini"));
+        if (getCommandLine().hasOption("ini")) {
+            System.out.println("Option -ini (ini) value = " + getCommandLine().getOptionValue("ini"));
+            frameworkInitializationFile.setName(getCommandLine().getOptionValue("ini"));
         }
 
         FrameworkInstance.getInstance().init(frameworkInitializationFile, new FrameworkExecutionContext(new Context("metadata", "")));
@@ -83,12 +77,12 @@ public class MetadataLauncher {
         MetadataRepositoryOperation metadataRepositoryOperation = new MetadataRepositoryOperation();
         List<MetadataRepository> metadataRepositories = new ArrayList<>();
 
-        System.out.println("Option -type (type) value = " + line.getOptionValue("type"));
-        String type = line.getOptionValue("type");
+        System.out.println("Option -type (type) value = " + getCommandLine().getOptionValue("type"));
+        String type = getCommandLine().getOptionValue("type");
 
 
-        if (line.hasOption("config")) {
-            String config = line.getOptionValue("config");
+        if (getCommandLine().hasOption("config")) {
+            String config = getCommandLine().getOptionValue("config");
 
             ConfigFile configFile = FrameworkControl.getInstance().getConfigFile("keyvalue",
                     FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("conf") + File.separator + config);
@@ -134,58 +128,9 @@ public class MetadataLauncher {
                     endLauncher(1, true);
             }
         }
-//        // Backup
-//        if (line.hasOption("backup")) {
-//            for (MetadataRepository metadataRepository : metadataRepositories) {
-//                writeHeaderMessage();
-//                System.out.println("Option -backup (backup) selected");
-//
-//                // Get path value
-//                String path = "";
-//                if (line.hasOption("path")) {
-//                    path = line.getOptionValue("path");
-//                    System.out.println("Option -path (path) value = " + path);
-//                } else {
-//                    System.out.println("Option -path (path) not provided");
-//                    writeFooterMessage();
-//                    endLauncher(1, true);
-//                }
-//
-//                // Execute
-//                BackupExecution backupExecution = new BackupExecution();
-//                backupExecution.execute(path);
-//                writeFooterMessage();
-//                endLauncher(0, true);
-//            }
-//        }
-
-        // Restore
-//        if (line.hasOption("restore")) {
-//            for (MetadataRepository metadataRepository : metadataRepositories) {
-//                writeHeaderMessage();
-//                System.out.println("Option -restore (restore) selected");
-//                System.out.println();
-//
-//                // Get path value
-//                String path = "";
-//                if (line.hasOption("path")) {
-//                    path = line.getOptionValue("path");
-//                    System.out.println("Option -path (path) value = " + path);
-//                } else {
-//                    System.out.println("Option -path (path) missing");
-//                    endLauncher(1, true);
-//                }
-//
-//                // Execute
-//                RestoreExecution restoreExecution = new RestoreExecution();
-//                restoreExecution.execute(path);
-//                writeFooterMessage();
-//                endLauncher(0, true);
-//            }
-//        }
 
         // Drop
-        if (line.hasOption("drop")) {
+        if (getCommandLine().hasOption("drop")) {
             for (MetadataRepository metadataRepository : metadataRepositories) {
 
                 writeHeaderMessage();
@@ -197,14 +142,14 @@ public class MetadataLauncher {
         }
 
         // DDL
-        if (line.hasOption("ddl")) {
+        if (getCommandLine().hasOption("ddl")) {
             for (MetadataRepository metadataRepository : metadataRepositories) {
                 System.out.println(metadataRepository.generateDDL());
             }
         }
 
         // Create
-        if (line.hasOption("create")) {
+        if (getCommandLine().hasOption("create")) {
             for (MetadataRepository metadataRepository : metadataRepositories) {
                 writeHeaderMessage();
                 System.out.println("Option -create (create) selected");
@@ -216,7 +161,7 @@ public class MetadataLauncher {
         }
 
         // clean
-        if (line.hasOption("clean")) {
+        if (getCommandLine().hasOption("clean")) {
             for (MetadataRepository metadataRepository : metadataRepositories) {
                 writeHeaderMessage();
                 System.out.println("Option -clean (clean) selected");
@@ -228,13 +173,13 @@ public class MetadataLauncher {
         }
 
         // load
-        if (line.hasOption("load")) {
+        if (getCommandLine().hasOption("load")) {
             writeHeaderMessage();
             System.out.println("Option -load (load) selected");
             System.out.println();
-            if (line.hasOption("files")) {
+            if (getCommandLine().hasOption("files")) {
                 String files = "";
-                files = line.getOptionValue("files");
+                files = getCommandLine().getOptionValue("files");
                 metadataRepositoryOperation.loadMetadataRepository(metadataRepositories, files);
             } else {
                 metadataRepositoryOperation.loadMetadataRepository(metadataRepositories);
@@ -265,4 +210,9 @@ public class MetadataLauncher {
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     }
 
+
+    @Override
+    public Options getOptions() {
+        return options;
+    }
 }

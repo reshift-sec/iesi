@@ -1,20 +1,31 @@
 package io.metadew.iesi.test.launch;
 
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
-import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
-import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.List;
 
 public final class Launcher {
 
-	
-	public static void execute(String launcher, List<LaunchArgument> inputArgs) throws ExecutionRequestBuilderException, ScriptExecutionRequestBuilderException, MetadataAlreadyExistsException, SQLException, MetadataDoesNotExistException, ParseException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
-		
+	private final static Logger LOGGER = LogManager.getLogger();
+
+    public static void execute(String launcher, List<LaunchArgument> inputArgs) throws Exception {
+		LaunchArgument option = null;
+        switch (launcher) {
+            case "metadata":
+				LOGGER.info("execute metadata");
+                option = new LaunchArgument(false, "-metadata", "");
+				inputArgs.add(0, option);
+                break;
+            case "script":
+				LOGGER.info("execute script");
+                option = new LaunchArgument(false, "-script", "");
+                inputArgs.add(0, option);
+				break;
+			default:
+				LOGGER.info("unknown type: " + launcher);
+		}
+
 		int inputArgsArraySize = 0;
 		for (LaunchArgument launchArgument : inputArgs) {
 			if (launchArgument.isKeyvalue()) {
@@ -31,7 +42,7 @@ public final class Launcher {
 			LaunchArgument launchArgument = inputArgs.get(k);
 			if (launchArgument.isKeyvalue()) {
 				inputArgsArray[i] = launchArgument.getKey();
-				inputArgsArray[i+1] = launchArgument.getValue();
+				inputArgsArray[i + 1] = launchArgument.getValue();
 				i = i + 2;
 			} else {
 				inputArgsArray[i] = launchArgument.getKey();
@@ -39,18 +50,9 @@ public final class Launcher {
 			}
 			k++;
 		}
+		inputArgs.remove(option);
+		io.metadew.iesi.launch.Launcher.main(inputArgsArray);
 
-		switch (launcher) {
-		case "metadata":
-			io.metadew.iesi.launch.MetadataLauncher.main(inputArgsArray);
-			break;
-		case "script":
-			io.metadew.iesi.launch.ScriptLauncher.main(inputArgsArray);
-			break;
-		default:
-			break;
-		}
+    }
 
-	}
-	
 }

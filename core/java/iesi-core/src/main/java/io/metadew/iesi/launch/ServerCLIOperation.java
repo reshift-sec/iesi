@@ -3,37 +3,35 @@ package io.metadew.iesi.launch;
 import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
 import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.framework.instance.FrameworkInstance;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.runtime.ExecutionRequestListener;
-import org.apache.commons.cli.*;
-import org.apache.logging.log4j.ThreadContext;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
-public class ServerLauncher {
+public class ServerCLIOperation extends CLIOperation {
 
-    public static void main(String[] args) throws ParseException {
-        ThreadContext.clearAll();
-        Options options = new Options()
-                .addOption(Option.builder("help")
-                        .desc("print this message").build())
-                .addOption(Option.builder("ini")
-                        .hasArg()
-                        .desc("define the initialization file")
-                        .build());
+    private final static Options options = new Options()
+            .addOption(Option.builder("help").desc("print this message").build())
+            .addOption(Option.builder("ini").hasArg().desc("define the initialization file").build());
+    
+    public ServerCLIOperation(String[] args) throws ParseException {
+        super(args);
+    }
 
-        CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = parser.parse(options, args);
+    @Override
+    public void performCLIOperation() throws Exception {
 
-        if (cmd.hasOption("help")) {
+        if (getCommandLine().hasOption("help")) {
             // automatically generate the help statement
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("[command]", options);
             System.exit(0);
         }
 
-        if (cmd.hasOption("ini")) {
-            FrameworkInstance.getInstance().init(new FrameworkInitializationFile(cmd.getOptionValue("ini")),
+        if (getCommandLine().hasOption("ini")) {
+            FrameworkInstance.getInstance().init(new FrameworkInitializationFile(getCommandLine().getOptionValue("ini")),
                     new FrameworkExecutionContext(new Context("server", "")));
         } else {
             FrameworkInstance.getInstance().init(new FrameworkInitializationFile(),
@@ -52,5 +50,10 @@ public class ServerLauncher {
             }
         }));
         new Thread(executionRequestListener).start();
+    }
+
+    @Override
+    public Options getOptions() {
+        return options;
     }
 }

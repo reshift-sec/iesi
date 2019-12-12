@@ -18,6 +18,6 @@ set CLASSPATH=!CLASSPATH!
 
 rem echo !CLASSPATH!
 
-java -cp !CLASSPATH! io.metadew.iesi.launch.EncryptionLauncher %*
+java -cp !CLASSPATH! io.metadew.iesi.launch.Launcher -encrypt %*
 
 cd !CURRENT_DIR!

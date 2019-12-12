@@ -18,6 +18,6 @@ set CLASSPATH=!CLASSPATH!
 
 rem echo !CLASSPATH!
 
-java -cp !CLASSPATH! io.metadew.iesi.launch.GuardLauncher %*
+java -cp !CLASSPATH! io.metadew.iesi.launch.Launcher -guard %*
 
 cd !CURRENT_DIR!

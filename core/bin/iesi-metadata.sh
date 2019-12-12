@@ -16,6 +16,6 @@ for i in *.jar; do
     classpath="$classpath:$lib_dir/$i"
 done
 
-java -cp $classpath io.metadew.iesi.launch.MetadataLauncher "$@"
+java -cp $classpath io.metadew.iesi.launch.Launcher -metadata "$@"
 
 cd $current_dir

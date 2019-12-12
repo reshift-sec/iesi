@@ -1,5 +1,7 @@
 package io.metadew.iesi.test.launch;
 
+import java.util.Objects;
+
 public class LaunchArgument {
 	
 	private boolean keyvalue;
@@ -40,5 +42,19 @@ public class LaunchArgument {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		LaunchArgument that = (LaunchArgument) o;
+		return keyvalue == that.keyvalue &&
+				Objects.equals(key, that.key) &&
+				Objects.equals(value, that.value);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(keyvalue, key, value);
+	}
 }

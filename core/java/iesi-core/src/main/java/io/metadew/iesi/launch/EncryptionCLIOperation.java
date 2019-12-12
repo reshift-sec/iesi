@@ -2,6 +2,9 @@ package io.metadew.iesi.launch;
 
 import io.metadew.iesi.framework.configuration.FrameworkConfiguration;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -11,16 +14,17 @@ import java.io.Console;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-/**
- * The encryption launcher is entry point to launch the encryption utility from commandline.
- * All passwords will be encrypted using this utility.
- *
- * @author peter.billen
- */
-public class EncryptionLauncher {
+public class EncryptionCLIOperation extends CLIOperation {
 
-    public static void main(String[] args) {
+    private final static Options options = new Options()
+            .addOption(Option.builder("encrypt").desc("encrypt according the IESI configuration").build());
 
+    public EncryptionCLIOperation(String[] args) throws ParseException {
+        super(args);
+    }
+
+    @Override
+    public void performCLIOperation() throws Exception {
         Console console = System.console();
         if (console == null) {
             System.out.println("Couldn't get Console instance");
@@ -66,4 +70,8 @@ public class EncryptionLauncher {
 
     }
 
+    @Override
+    public Options getOptions() {
+        return options;
+    }
 }

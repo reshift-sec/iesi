@@ -3,8 +3,12 @@ package io.metadew.iesi.test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.connection.tools.FolderTools;
+import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
+import io.metadew.iesi.framework.execution.FrameworkExecutionContext;
+import io.metadew.iesi.framework.instance.FrameworkInstance;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
+import io.metadew.iesi.metadata.definition.Context;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestBuilderException;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestBuilderException;
@@ -26,6 +30,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ActionsTest {
 
@@ -40,6 +46,7 @@ public class ActionsTest {
 				.addOption(Option.builder("version").hasArg().required().desc("Version of the iesi instance").build())
 				.addOption(Option.builder("ini").hasArg().desc("ini file of the iesi instance").build())
 				.addOption(Option.builder("create").desc("only create the repository without loading and execution").build());
+
 
 		CommandLineParser parser = new DefaultParser();
 		try {
@@ -135,6 +142,16 @@ public class ActionsTest {
 			FolderTools.copyFromFolderToFolder(connectionsTestConfigurationHome, connectionsTestConfDataFolder, false);
 			FileTools.delete(connectionsTestConfDataFolder + File.separator + ".gitkeep");
 
+			if (cmd.hasOption("ini")) {
+				// Create framework instance
+				System.out.println("Option -ini (ini) value = " + cmd.getOptionValue("ini"));
+				FrameworkInstance.getInstance().init(new FrameworkInitializationFile(cmd.getOptionValue("ini")),
+						new FrameworkExecutionContext(new Context("script", "")));
+			} else {
+				FrameworkInstance.getInstance().init(new FrameworkInitializationFile(),
+						new FrameworkExecutionContext(new Context("script", "")));
+			}
+			
 			// Create repository
 			List<LaunchArgument> metadataCreateArgs = new ArrayList<>();
 			LaunchArgument ini = new LaunchArgument(true, "-ini", cmd.getOptionValue("ini", "iesi-test.ini"));
@@ -238,8 +255,9 @@ public class ActionsTest {
 					testLaunchConfigurationHome + File.separator + "initializations.json");
 			for (DataObject dataObject : launchInitializationOperation.getDataObjects()) {
 				LaunchItem launchItem = objectMapper.convertValue(dataObject.getData(), LaunchItem.class);
-				script = new LaunchArgument(true, "-script", launchItem.getScript());
+				script = new LaunchArgument(true, "-name", launchItem.getScript());
 				scriptInputArgs.add(script);
+
 
 
 
@@ -261,7 +279,7 @@ public class ActionsTest {
 					testLaunchConfigurationHome + File.separator + "actions.json");
 			for (DataObject dataObject : actionLaunchItemOperation.getDataObjects()) {
 				LaunchItem launchItem = objectMapper.convertValue(dataObject.getData(), LaunchItem.class);
-				script = new LaunchArgument(true, "-script", launchItem.getScript());
+				script = new LaunchArgument(true, "-name", launchItem.getScript());
 				scriptInputArgs.add(script);
 
 				// Parameter list
@@ -282,7 +300,7 @@ public class ActionsTest {
 					testLaunchConfigurationHome + File.separator + "instructions.json");
 			for (DataObject dataObject : instructionLaunchItemOperation.getDataObjects()) {
 				LaunchItem launchItem = objectMapper.convertValue(dataObject.getData(), LaunchItem.class);
-				script = new LaunchArgument(true, "-script", launchItem.getScript());
+				script = new LaunchArgument(true, "-name", launchItem.getScript());
 				scriptInputArgs.add(script);
 
 				// Parameter list
@@ -303,7 +321,7 @@ public class ActionsTest {
 					testLaunchConfigurationHome + File.separator + "terminations.json");
 			for (DataObject dataObject : launchTerminationOperation.getDataObjects()) {
 				LaunchItem launchItem = objectMapper.convertValue(dataObject.getData(), LaunchItem.class);
-				script = new LaunchArgument(true, "-script", launchItem.getScript());
+				script = new LaunchArgument(true, "-name", launchItem.getScript());
 				scriptInputArgs.add(script);
 
 				// Parameter list
@@ -319,7 +337,7 @@ public class ActionsTest {
 				scriptInputArgs.remove(paramList);
 			}
 
-		} catch (ParseException | ExecutionRequestBuilderException | ScriptExecutionRequestBuilderException | MetadataAlreadyExistsException | SQLException | MetadataDoesNotExistException | InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
