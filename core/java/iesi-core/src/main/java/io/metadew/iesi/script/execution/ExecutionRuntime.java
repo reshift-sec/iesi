@@ -19,7 +19,10 @@ import io.metadew.iesi.script.execution.instruction.lookup.LookupInstructionRepo
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstruction;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionRepository;
 import io.metadew.iesi.script.execution.instruction.variable.VariableInstructionTools;
-import io.metadew.iesi.script.operation.*;
+import io.metadew.iesi.script.operation.ActionParameterOperation;
+import io.metadew.iesi.script.operation.ImpersonationOperation;
+import io.metadew.iesi.script.operation.IterationOperation;
+import io.metadew.iesi.script.operation.StageOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

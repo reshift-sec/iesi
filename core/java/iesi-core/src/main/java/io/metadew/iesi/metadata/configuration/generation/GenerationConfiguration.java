@@ -1,7 +1,6 @@
 package io.metadew.iesi.metadata.configuration.generation;
 
 import io.metadew.iesi.connection.tools.SQLTools;
-import io.metadew.iesi.framework.configuration.FrameworkObjectConfiguration;
 import io.metadew.iesi.metadata.definition.generation.*;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 

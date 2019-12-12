@@ -2,7 +2,6 @@ package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

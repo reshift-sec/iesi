@@ -1,10 +1,8 @@
 package io.metadew.iesi.script.execution;
 
-import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.lang.reflect.InvocationTargetException;

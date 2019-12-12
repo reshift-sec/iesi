@@ -4,7 +4,6 @@ import io.metadew.iesi.datatypes.DataType;
 import io.metadew.iesi.metadata.configuration.type.ActionTypeConfiguration;
 import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.service.action.ActionTraceService;
-import io.metadew.iesi.metadata.service.script.ScriptTraceService;
 import io.metadew.iesi.script.configuration.IterationInstance;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.ComponentAttributeOperation;

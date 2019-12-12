@@ -7,7 +7,6 @@ import io.metadew.iesi.metadata.service.script.ScriptTraceService;
 import io.metadew.iesi.script.action.fwk.FwkIncludeScript;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -6,7 +6,6 @@ import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.configuration.ScriptRunStatus;
 import io.metadew.iesi.framework.crypto.FrameworkCrypto;
 import io.metadew.iesi.framework.execution.FrameworkControl;
-import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultConfiguration;
 import io.metadew.iesi.metadata.configuration.action.result.ActionResultOutputConfiguration;
 import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
@@ -24,7 +23,8 @@ import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultOutputKey;
 import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.service.script.ScriptDesignTraceService;
-import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

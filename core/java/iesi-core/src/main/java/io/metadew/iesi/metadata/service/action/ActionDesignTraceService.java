@@ -7,7 +7,6 @@ import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.action.ActionParameter;
 import io.metadew.iesi.metadata.definition.action.design.ActionDesignTrace;
 import io.metadew.iesi.metadata.definition.action.design.ActionParameterDesignTrace;
-import io.metadew.iesi.metadata.service.script.ScriptDesignTraceService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

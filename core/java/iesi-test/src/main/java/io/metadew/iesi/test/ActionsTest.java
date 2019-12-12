@@ -151,7 +151,7 @@ public class ActionsTest {
 				FrameworkInstance.getInstance().init(new FrameworkInitializationFile(),
 						new FrameworkExecutionContext(new Context("script", "")));
 			}
-			
+
 			// Create repository
 			List<LaunchArgument> metadataCreateArgs = new ArrayList<>();
 			LaunchArgument ini = new LaunchArgument(true, "-ini", cmd.getOptionValue("ini", "iesi-test.ini"));
