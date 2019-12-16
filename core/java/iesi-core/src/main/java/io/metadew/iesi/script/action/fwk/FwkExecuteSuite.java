@@ -17,7 +17,6 @@ import io.metadew.iesi.script.execution.ExecutionControl;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
 import io.metadew.iesi.script.operation.ActionParameterOperation;
-import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.JsonInputOperation;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -235,7 +234,6 @@ public class FwkExecuteSuite {
                 } else {
                     ScriptExecution scriptExecution = new ScriptExecutionBuilder(true, false)
                             .script(script)
-                            .actionSelectOperation(new ActionSelectOperation(""))
                             .environment(environmentName)
                             .exitOnCompletion(false)
                             .build();

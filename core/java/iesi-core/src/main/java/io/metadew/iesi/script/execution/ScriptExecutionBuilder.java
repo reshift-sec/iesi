@@ -2,7 +2,6 @@ package io.metadew.iesi.script.execution;
 
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
-import io.metadew.iesi.script.operation.ActionSelectOperation;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.lang.reflect.InvocationTargetException;
@@ -24,8 +23,8 @@ public class ScriptExecutionBuilder {
     private ScriptExecution parentScriptExecution;
     private Map<String, String> parameters = new HashMap<>();
     private Map<String, String> impersonations = new HashMap<>();
-    private ActionSelectOperation actionSelectOperation;
     private String environment;
+    private String runId;
 
     public ScriptExecutionBuilder(boolean root, boolean route) {
         this.root = root;
@@ -36,10 +35,14 @@ public class ScriptExecutionBuilder {
         this.script = script;
         return this;
     }
-    
-    
+
+
     public ScriptExecutionBuilder environment(String environment) {
         this.environment = environment;
+        return this;
+    }
+    public ScriptExecutionBuilder runId(String runId) {
+        this.runId = runId;
         return this;
     }
 
@@ -86,25 +89,18 @@ public class ScriptExecutionBuilder {
         return this;
     }
 
-    public ScriptExecutionBuilder actionSelectOperation(ActionSelectOperation actionSelectOperation) {
-        this.actionSelectOperation = actionSelectOperation;
-        return this;
-    }
-
     public ScriptExecution build() throws ScriptExecutionBuildException {
-        String runId = UUID.randomUUID().toString();
-        ThreadContext.put("runId", runId);
         if (route) {
-            return buildRouteScriptExecution(runId);
+            return buildRouteScriptExecution();
         } else {
-            return buildNonRouteScriptExecution(runId);
+            return buildNonRouteScriptExecution();
         }
     }
 
-    private ScriptExecution buildNonRouteScriptExecution(String runId) throws ScriptExecutionBuildException {
+    private ScriptExecution buildNonRouteScriptExecution() throws ScriptExecutionBuildException {
         if (root) {
             try {
-                ExecutionControl executionControl = new ExecutionControl(runId);
+                ExecutionControl executionControl = new ExecutionControl(getRunId());
                 return new NonRouteScriptExecution(
                         getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to script execution builder")),
                         getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
@@ -115,15 +111,12 @@ public class ScriptExecutionBuilder {
                         null,
                         parameters,
                         impersonations,
-                        //getActionSelectOperation().orElseThrow(() -> new ScriptExecutionBuildException("No action selection supplied to script execution builder")),
-                        getActionSelectOperation().orElse(new ActionSelectOperation("")),
                         new RootStrategy()
                 );
             } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | SQLException e) {
                 throw new ScriptExecutionBuildException(e);
             }
         } else {
-            ActionSelectOperation actionSelectOperation = new ActionSelectOperation("");
             return new NonRouteScriptExecution(
                     getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to script execution builder")),
                     getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
@@ -134,15 +127,14 @@ public class ScriptExecutionBuilder {
                     getParentScriptExecution().orElseThrow(() -> new ScriptExecutionBuildException("no parent script execution provided")),
                     parameters,
                     impersonations,
-                    actionSelectOperation,
                     new NonRootStrategy()
             );
         }
     }
 
-    private ScriptExecution buildRouteScriptExecution(String runId) throws ScriptExecutionBuildException {
+    private ScriptExecution buildRouteScriptExecution() throws ScriptExecutionBuildException {
         try {
-            ExecutionControl executionControl = root ? new ExecutionControl(runId) : getExecutionControl().orElseThrow(() -> new ScriptExecutionBuildException("No execution control supplied to route script execution builder"));
+            ExecutionControl executionControl = root ? new ExecutionControl(getRunId()) : getExecutionControl().orElseThrow(() -> new ScriptExecutionBuildException("No execution control supplied to route script execution builder"));
             return new RouteScriptExecution (
                     getScript().orElseThrow(() -> new ScriptExecutionBuildException("No script supplied to route script execution builder")),
                     getEnvironment().orElseThrow(() -> new ScriptExecutionBuildException("No environment supplied to route script execution builder")),
@@ -154,7 +146,6 @@ public class ScriptExecutionBuilder {
                     parameters,
                     impersonations,
                     // getActionSelectOperation().orElseThrow(() -> new ScriptExecutionBuildException("No action selection supplied to route script execution builder")),
-                    getActionSelectOperation().orElse(new ActionSelectOperation("")),
                     root ? new RootStrategy() : new NonRootStrategy()
             );
         } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException | SQLException e) {
@@ -186,11 +177,17 @@ public class ScriptExecutionBuilder {
         return Optional.ofNullable(parentScriptExecution);
     }
 
-    public Optional<ActionSelectOperation> getActionSelectOperation() {
-        return Optional.ofNullable(actionSelectOperation);
-    }
-
     public Optional<String> getEnvironment() {
         return Optional.ofNullable(environment);
+    }
+
+    public String getRunId() {
+        if (runId == null) {
+            String runId = UUID.randomUUID().toString();
+            ThreadContext.put("runId", runId);
+            return runId;
+        } else {
+            return runId;
+        }
     }
 }

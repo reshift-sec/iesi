@@ -1,13 +1,11 @@
 package io.metadew.iesi.runtime;
 
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.NonAuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
-import io.metadew.iesi.runtime.script.ScriptExecutorService;
-import io.metadew.iesi.script.ScriptExecutionBuildException;
+import io.metadew.iesi.runtime.script.ScriptExecutionRequestListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,6 +14,7 @@ public class NonAuthenticatedRequestExecutor implements RequestExecutor<NonAuthe
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static NonAuthenticatedRequestExecutor INSTANCE;
+    private final ScriptExecutionRequestListener scriptExecutionRequestListener;
 
     public synchronized static NonAuthenticatedRequestExecutor getInstance() {
         if (INSTANCE == null) {
@@ -24,7 +23,9 @@ public class NonAuthenticatedRequestExecutor implements RequestExecutor<NonAuthe
         return INSTANCE;
     }
 
-    private NonAuthenticatedRequestExecutor() {}
+    private NonAuthenticatedRequestExecutor() {
+        this.scriptExecutionRequestListener = new ScriptExecutionRequestListener();
+    }
 
     @Override
     public Class<NonAuthenticatedExecutionRequest> appliesTo() {
@@ -38,11 +39,7 @@ public class NonAuthenticatedRequestExecutor implements RequestExecutor<NonAuthe
             ExecutionRequestConfiguration.getInstance().update(executionRequest);
 
             for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
-                try {
-                    ScriptExecutorService.getInstance().execute(scriptExecutionRequest);
-                } catch (ScriptExecutionBuildException | MetadataAlreadyExistsException | MetadataDoesNotExistException e) {
-                    e.printStackTrace();
-                }
+                scriptExecutionRequestListener.execute(scriptExecutionRequest);
             }
             executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
             ExecutionRequestConfiguration.getInstance().update(executionRequest);

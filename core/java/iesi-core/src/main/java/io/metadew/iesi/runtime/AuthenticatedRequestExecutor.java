@@ -5,16 +5,12 @@ import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.framework.execution.IESIMessage;
 import io.metadew.iesi.guard.configuration.UserAccessConfiguration;
 import io.metadew.iesi.guard.definition.UserAccess;
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
 import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfiguration;
-import io.metadew.iesi.metadata.configuration.execution.script.ScriptExecutionRequestConfiguration;
 import io.metadew.iesi.metadata.definition.execution.AuthenticatedExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
-import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequestStatus;
-import io.metadew.iesi.runtime.script.ScriptExecutorService;
-import io.metadew.iesi.script.ScriptExecutionBuildException;
+import io.metadew.iesi.runtime.script.ScriptExecutionRequestListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,6 +24,7 @@ public class AuthenticatedRequestExecutor implements RequestExecutor<Authenticat
     private final Boolean authenticationEnabled;
 
     private static AuthenticatedRequestExecutor INSTANCE;
+    private final ScriptExecutionRequestListener scriptExecutionRequestListener;
 
     public synchronized static AuthenticatedRequestExecutor getInstance() {
         if (INSTANCE == null) {
@@ -38,6 +35,7 @@ public class AuthenticatedRequestExecutor implements RequestExecutor<Authenticat
 
     private AuthenticatedRequestExecutor() {
         this.userAccessConfiguration = new UserAccessConfiguration();
+        this.scriptExecutionRequestListener = new ScriptExecutionRequestListener();
         this.authenticationEnabled = FrameworkSettingConfiguration.getInstance().getSettingPath("guard.authenticate")
                 .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath).equalsIgnoreCase("y"))
                 .orElse(false);
@@ -60,19 +58,19 @@ public class AuthenticatedRequestExecutor implements RequestExecutor<Authenticat
             ExecutionRequestConfiguration.getInstance().update(executionRequest);
 
             for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
-                try {
-                    ScriptExecutorService.getInstance().execute(scriptExecutionRequest);
-                } catch (ScriptExecutionBuildException | MetadataAlreadyExistsException | MetadataDoesNotExistException e) {
-                    LOGGER.info("script execution " + scriptExecutionRequest.toString() + " of " + executionRequest.toString() + "pre-maturely ended due to " + e.toString());
-
-                    scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.DECLINED);
-                    ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
-
-                    StringWriter stackTrace = new StringWriter();
-                    e.printStackTrace(new PrintWriter(stackTrace));
-                    LOGGER.info("exception=" + e);
-                    LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
-                }
+//                try {
+                scriptExecutionRequestListener.execute(scriptExecutionRequest);
+//                } catch (MetadataDoesNotExistException e) {
+//                    LOGGER.info("script execution " + scriptExecutionRequest.toString() + " of " + executionRequest.toString() + "pre-maturely ended due to " + e.toString());
+//
+//                    scriptExecutionRequest.updateScriptExecutionRequestStatus(ScriptExecutionRequestStatus.DECLINED);
+//                    ScriptExecutionRequestConfiguration.getInstance().update(scriptExecutionRequest);
+//
+//                    StringWriter stackTrace = new StringWriter();
+//                    e.printStackTrace(new PrintWriter(stackTrace));
+//                    LOGGER.info("exception=" + e);
+//                    LOGGER.debug("exception.stacktrace=" + stackTrace.toString());
+//                }
             }
 
             executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);

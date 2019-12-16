@@ -1,12 +1,26 @@
 package io.metadew.iesi.runtime.script;
 
-import io.metadew.iesi.metadata.configuration.exception.MetadataAlreadyExistsException;
-import io.metadew.iesi.metadata.configuration.exception.MetadataDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
-import io.metadew.iesi.script.ScriptExecutionBuildException;
 
-public interface ScriptExecutor <T extends ScriptExecutionRequest> {
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-    public Class<T> appliesTo();
-    public void execute(T scriptExecutionRequest) throws MetadataDoesNotExistException, ScriptExecutionBuildException, MetadataAlreadyExistsException;
+public abstract class ScriptExecutor {
+
+    private final ExecutorService queue;
+
+    protected ScriptExecutor(int threadSize) {
+        this.queue = Executors.newFixedThreadPool(threadSize);
+    }
+
+
+    public void start(ScriptExecutionRequest scriptExecutionRequest) {
+
+    }
+
+    public abstract void execute(ScriptExecutionRequest scriptExecutionRequest) throws Exception;
+
+    public ExecutorService getQueue() {
+        return queue;
+    }
 }

@@ -5,7 +5,6 @@ import io.metadew.iesi.metadata.definition.action.Action;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.service.script.ScriptTraceService;
 import io.metadew.iesi.script.action.fwk.FwkIncludeScript;
-import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,13 +26,12 @@ public abstract class ScriptExecution {
 	private String result;
 	public Map<String, String> parameters;
 	public Map<String, String> impersonations;
-	private ActionSelectOperation actionSelectOperation;
 	private String environment;
 
 	public ScriptExecution(Script script, String environment, ExecutionControl executionControl,
 						   ExecutionMetrics executionMetrics, Long processId, boolean exitOnCompletion,
 						   ScriptExecution parentScriptExecution, Map<String, String> parameters, Map<String, String> impersonations,
-						   ActionSelectOperation actionSelectOperation, RootingStrategy rootingStrategy) {
+						   RootingStrategy rootingStrategy) {
 		this.script = script;
 		this.environment = environment;
 		this.executionControl = executionControl;
@@ -43,7 +41,6 @@ public abstract class ScriptExecution {
 		this.parentScriptExecution = parentScriptExecution;
 		this.parameters = parameters;
 		this.impersonations = impersonations;
-		this.actionSelectOperation = actionSelectOperation;
 		this.rootingStrategy = rootingStrategy;
 	}
 
@@ -61,12 +58,6 @@ public abstract class ScriptExecution {
 			Action action = actionsToExecute.get(actionIndex);
 
 			ActionExecution actionExecution = new ActionExecution(executionControl, this, action);
-
-			if (!rootingStrategy.executionAllowed(actionSelectOperation, action)) {
-				// TODO: log
-				actionExecution.skip();
-				continue;
-			}
 
 			if (action.getType().equalsIgnoreCase("fwk.route")) {
 				executeFwkRouteAction(actionExecution);
@@ -126,7 +117,6 @@ public abstract class ScriptExecution {
 				break;
 			}
 
-			rootingStrategy.continueAction(actionSelectOperation, action);
 			actionIndex++;
 		}
 		endExecution();
@@ -163,7 +153,6 @@ public abstract class ScriptExecution {
 					.executionControl(executionControl)
 					.parentScriptExecution(parentScriptExecution)
 					.executionMetrics(executionMetrics)
-					.actionSelectOperation(new ActionSelectOperation(""))
 					.exitOnCompletion(true)
 					.build();
 
@@ -215,14 +204,6 @@ public abstract class ScriptExecution {
 
 	public Optional<ScriptExecution> getParentScriptExecution() {
 		return Optional.ofNullable(parentScriptExecution);
-	}
-
-	public ActionSelectOperation getActionSelectOperation() {
-		return actionSelectOperation;
-	}
-
-	public void setActionSelectOperation(ActionSelectOperation actionSelectOperation) {
-		this.actionSelectOperation = actionSelectOperation;
 	}
 
 	public String getResult() {
