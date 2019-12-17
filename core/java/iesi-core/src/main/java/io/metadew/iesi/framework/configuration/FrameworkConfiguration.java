@@ -4,14 +4,13 @@ import io.metadew.iesi.common.config.KeyValueConfigFile;
 import io.metadew.iesi.connection.tools.FileTools;
 import org.apache.logging.log4j.ThreadContext;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class FrameworkConfiguration {
 
 	private String frameworkCode;
-	private String frameworkHome;
+	private Path frameworkHome;
 
 	private FrameworkGenerationRuleTypeConfiguration generationRuleTypeConfiguration;
 
@@ -30,27 +29,29 @@ public class FrameworkConfiguration {
 	public void init() {
 		ThreadContext.put("fwk.code", FrameworkSettings.IDENTIFIER.value());
 		String configurationFile = FrameworkSettings.IDENTIFIER.value() + "-home.conf";
+		String frameworkHome;
 		if (System.getProperty(FrameworkSettings.IDENTIFIER.value() + ".home") != null) {
-			this.frameworkHome = System.getProperty(FrameworkSettings.IDENTIFIER.value()  + ".home");
+			frameworkHome = System.getProperty(FrameworkSettings.IDENTIFIER.value()  + ".home");
 		} else if (getClass().getResource(FrameworkSettings.IDENTIFIER.value() + ".home") != null) {
-			this.frameworkHome = getClass().getResource(FrameworkSettings.IDENTIFIER.value()  + ".home").getFile();
+			frameworkHome = getClass().getResource(FrameworkSettings.IDENTIFIER.value()  + ".home").getFile();
 		} else if (getClass().getResource(FrameworkSettings.IDENTIFIER.value() + "-home.conf") != null) {
 			KeyValueConfigFile home = new KeyValueConfigFile(getClass().getResource(FrameworkSettings.IDENTIFIER.value() + "-home.conf").getFile());
-			this.frameworkHome = home.getProperties().getProperty(FrameworkSettings.IDENTIFIER.value()  + ".home");
+			frameworkHome = home.getProperties().getProperty(FrameworkSettings.IDENTIFIER.value()  + ".home");
 		} else if (FileTools.exists(configurationFile)) {
 			KeyValueConfigFile home = new KeyValueConfigFile(configurationFile);
-			this.frameworkHome = home.getProperties().getProperty(FrameworkSettings.IDENTIFIER.value()  + ".home");
+			frameworkHome = home.getProperties().getProperty(FrameworkSettings.IDENTIFIER.value()  + ".home");
 		} else {
 			Path path = Paths.get(".").toAbsolutePath();
 			throw new RuntimeException(FrameworkSettings.IDENTIFIER.value()  + ".home not found as System property or " + FrameworkSettings.IDENTIFIER.value() + "-home.conf not found at " + path.getRoot() + " or on classpath");
 		}
-		init(frameworkHome);
+		init(Paths.get(frameworkHome));
 	}
 
-	public void init(String frameworkHome) {
+	public void init(Path frameworkHome) {
 		this.frameworkCode = FrameworkSettings.IDENTIFIER.value();
 		ThreadContext.put("fwk.code", FrameworkSettings.IDENTIFIER.value());
 		this.frameworkHome = frameworkHome;
+
 		FrameworkFolderConfiguration folderConfiguration = FrameworkFolderConfiguration.getInstance();
 		folderConfiguration.init(frameworkHome);
 
@@ -60,7 +61,8 @@ public class FrameworkConfiguration {
 		FrameworkActionTypeConfiguration actionTypeConfiguration = FrameworkActionTypeConfiguration.getInstance();
 		actionTypeConfiguration.init(folderConfiguration);
 
-		this.generationRuleTypeConfiguration = new FrameworkGenerationRuleTypeConfiguration(folderConfiguration);
+		this.generationRuleTypeConfiguration = new FrameworkGenerationRuleTypeConfiguration();
+
 	}
 
 	public void initAssembly(String repositoryHome) {
@@ -68,7 +70,7 @@ public class FrameworkConfiguration {
 		//  for testing purposes
 		this.frameworkCode = FrameworkSettings.IDENTIFIER.value();
 		ThreadContext.put("fwk.code", frameworkCode);
-		this.frameworkHome = repositoryHome + File.separator + "core";
+		this.frameworkHome = Paths.get(repositoryHome).resolve("core");
 
 		FrameworkFolderConfiguration folderConfiguration = FrameworkFolderConfiguration.getInstance();
 		folderConfiguration.init(frameworkHome);
@@ -77,16 +79,16 @@ public class FrameworkConfiguration {
 		settingConfiguration.init(frameworkHome);
 	}
 
-	public void init(String frameworkHome, FrameworkGenerationRuleTypeConfiguration frameworkGenerationRuleTypeConfiguration) {
+	public void init(Path frameworkHome, FrameworkGenerationRuleTypeConfiguration frameworkGenerationRuleTypeConfiguration) {
 		this.frameworkCode = FrameworkSettings.IDENTIFIER.value();
-		ThreadContext.put("fwk.code", frameworkCode);
+		ThreadContext.put("fwk.code", FrameworkSettings.IDENTIFIER.value());
 		this.frameworkHome = frameworkHome;
+
 		FrameworkFolderConfiguration folderConfiguration = FrameworkFolderConfiguration.getInstance();
 		folderConfiguration.init(frameworkHome);
 
 		FrameworkSettingConfiguration settingConfiguration = FrameworkSettingConfiguration.getInstance();
 		settingConfiguration.init(frameworkHome);
-
 
 		FrameworkActionTypeConfiguration actionTypeConfiguration = FrameworkActionTypeConfiguration.getInstance();
 		actionTypeConfiguration.init(folderConfiguration);
@@ -94,7 +96,7 @@ public class FrameworkConfiguration {
 		this.generationRuleTypeConfiguration = frameworkGenerationRuleTypeConfiguration;
 	}
 
-	public String getFrameworkHome() {
+	public Path getFrameworkHome() {
 		return frameworkHome;
 	}
 

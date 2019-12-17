@@ -9,16 +9,20 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Properties;
 import java.util.UUID;
 
 public class FrameworkRuntime {
 
-	private String runCacheFolderName;
-	private String localHostChallenge;
-	private String localHostChallengeFileName;
-	private String runSpoolFolderName;
-	private String processIdFileName;
+	private Path runCacheFolderName;
+	private Path localHostChallengeFileName;
 	private String frameworkRunId;
 
 	private static FrameworkRuntime INSTANCE;
@@ -32,46 +36,62 @@ public class FrameworkRuntime {
 
 	private FrameworkRuntime() {}
 
-	public void init() {
+	public void init() throws IOException {
 		init(new FrameworkRunIdentifier());
 	}
 
-	public void init(FrameworkRunIdentifier frameworkRunIdentifier) {
+	public void init(FrameworkRunIdentifier frameworkRunIdentifier) throws IOException {
 		init(frameworkRunIdentifier.getId());
 	}
 
-	public void init(String runId) {
+	public void init(String runId) throws IOException {
 		this.frameworkRunId = runId;
 		ThreadContext.put("fwk.runid", runId);
-		this.runCacheFolderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache")
-				+ File.separator + this.frameworkRunId;
-		FolderTools.createFolder(runCacheFolderName);
-
-		this.runSpoolFolderName = this.runCacheFolderName + File.separator + "spool";
-		FolderTools.createFolder(runSpoolFolderName);
-
-		this.localHostChallenge = UUID.randomUUID().toString();
-		this.localHostChallengeFileName = FilenameUtils.normalize(runCacheFolderName + File.separator + this.localHostChallenge  + ".fwk");
-		FileTools.appendToFile(localHostChallengeFileName, "", "localhost.challenge=" + this.localHostChallenge);
-
-		// Initialize process id
-		this.processIdFileName = FilenameUtils.normalize(runCacheFolderName + File.separator  + "processId.fwk");
-		Properties processIdProperties = new Properties();
-		processIdProperties.put("processId", "-1");
-		PropertiesTools.setProperties(processIdFileName, processIdProperties);
+		this.runCacheFolderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache").resolve(this.frameworkRunId);
+		Files.createDirectory(runCacheFolderName);
+//
+//		this.runSpoolFolderName = this.runCacheFolderName + File.separator + "spool";
+//		FolderTools.createFolder(runSpoolFolderName);
+//
+		String challenge = UUID.randomUUID().toString();
+		this.localHostChallengeFileName = runCacheFolderName.resolve(challenge + ".fwk");
+		Files.createFile(localHostChallengeFileName);
+		Files.write(localHostChallengeFileName, ("localhost.challenge=" + challenge).getBytes(Charset.defaultCharset()));
+//
+//		// Initialize process id
+//		this.processIdFileName = FilenameUtils.normalize(runCacheFolderName + File.separator  + "processId.fwk");
+//		Properties processIdProperties = new Properties();
+//		processIdProperties.put("processId", "-1");
+//		PropertiesTools.setProperties(processIdFileName, processIdProperties);
 	}
 
 
 	public void terminate() {
-		FolderTools.deleteFolder(runCacheFolderName, true);
-	}
+		try {
+			Files.walkFileTree(runCacheFolderName, new SimpleFileVisitor<Path>() {
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					Files.delete(file);
+					return FileVisitResult.CONTINUE;
+				}
 
+				@Override
+				public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+					Files.delete(dir);
+					return FileVisitResult.CONTINUE;
+				}
+			});
+			// Files.deleteIfExists(runCacheFolderName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public String getFrameworkRunId() {
 		return frameworkRunId;
 	}
 
-	public String getLocalHostChallengeFileName() {
+	public Path getLocalHostChallengeFileName() {
 		return localHostChallengeFileName;
 	}
 

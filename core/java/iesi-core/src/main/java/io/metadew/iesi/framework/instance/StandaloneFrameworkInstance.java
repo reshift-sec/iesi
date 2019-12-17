@@ -12,6 +12,7 @@ import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
 import io.metadew.iesi.runtime.ExecutorService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class StandaloneFrameworkInstance extends FrameworkInstance {
     private StandaloneFrameworkInstance() {}
 
     @Override
-    public void init(String logonType, FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context) {
+    public void init(String logonType, FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext context) throws IOException {
         // Get the framework configuration
         FrameworkConfiguration frameworkConfiguration = FrameworkConfiguration.getInstance();
         frameworkConfiguration.init();

@@ -28,8 +28,8 @@ public class DatasetMetadata {
 
     public DatasetMetadata(String datasetName) {
         this.datasetName = datasetName;
-        this.database = new SqliteDatabase(new SqliteDatabaseConnection(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data") + File.separator + "datasets"
-                + File.separator + datasetName + File.separator + "metadata" + File.separator + "metadata.db3"));
+        this.database = new SqliteDatabase(new SqliteDatabaseConnection(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data")
+                .resolve("datasets").resolve(datasetName).resolve("metadata").resolve("metadata.db3")));
     }
 
     public Optional<Long> getId(List<String> labels) {
@@ -67,8 +67,8 @@ public class DatasetMetadata {
                         "Returning first occurrence.", id)));
             }
             cachedRowSetFileTable.next();
-            Database database = new SqliteDatabase(new SqliteDatabaseConnection(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data") + File.separator + "datasets"
-                    + File.separator + datasetName + File.separator + "data" + File.separator + cachedRowSetFileTable.getString("DATASET_FILE_NM")));
+            Database database = new SqliteDatabase(new SqliteDatabaseConnection(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data").resolve("datasets")
+                   .resolve(datasetName).resolve("data").resolve(cachedRowSetFileTable.getString("DATASET_FILE_NM"))));
             cachedRowSetFileTable.close();
             return database;
         } catch (SQLException e) {

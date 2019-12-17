@@ -13,8 +13,7 @@ public class MappingConfiguration {
     public MappingConfiguration() {}
 
     public Mapping getMapping(String mappingName) {
-        String conf = TypeConfigurationOperation.getMappingConfigurationFile(this.getDataObjectType(), mappingName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(TypeConfigurationOperation.getMappingConfigurationFile(this.getDataObjectType(), mappingName));
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 Mapping.class);

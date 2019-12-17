@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -97,9 +98,8 @@ public class KeyValueDataset extends Dataset {
 
     protected Database createNewDatasetDatabase(String datasetName, String filename, String tableName, int inventoryId) throws IOException {
         LOGGER.debug(MessageFormat.format("creating dataset {0} for {1} at {2} table {3}", inventoryId, datasetName, filename, tableName));
-        String filepath = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data") + File.separator + "datasets"
-                + File.separator + datasetName + File.separator + "data" + File.separator + filename;
-        File file = new File(filepath);
+        Path filepath = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data").resolve("datasets").resolve(datasetName).resolve("data").resolve(filename);
+        File file = filepath.toFile();
         file.setWritable(true, true);
         FileUtils.touch(file);
         getDatasetMetadata().insertDatasetDatabaseInformation(inventoryId, filename, tableName);

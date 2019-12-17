@@ -63,6 +63,12 @@ class DateTravelTest {
     }
 
     @Test
+    void generateOutputFromWorkingDayToNonWorkingDayForward() {
+        DateTravel dateTravel = new DateTravel();
+        assertEquals("21122019", dateTravel.generateOutput("16122019, \"day\", 1, nw"));
+    }
+
+    @Test
     void generateOutputWorkingDayBackward() {
         DateTravel dateTravel = new DateTravel();
         assertEquals("15112019", dateTravel.generateOutput("18112019, \"day\", -2, W"));

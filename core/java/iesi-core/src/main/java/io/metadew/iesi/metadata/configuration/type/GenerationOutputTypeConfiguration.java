@@ -20,8 +20,7 @@ public class GenerationOutputTypeConfiguration {
 
     // Methods
     public GenerationOutputType getGenerationOutputType(String GenerationOutputTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), GenerationOutputTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), GenerationOutputTypeName));
         ObjectMapper objectMapper = new ObjectMapper();
         GenerationOutputType GenerationOutputType = objectMapper
                 .convertValue(dataObjectOperation.getDataObject().getData(), GenerationOutputType.class);

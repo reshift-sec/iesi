@@ -3,8 +3,6 @@ package io.metadew.iesi.metadata.service.execution.script;
 import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.script.Script;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -26,20 +24,19 @@ public class ScriptExecutionRequestHandlerService {
     private ScriptExecutionRequestHandlerService() {
         scriptExecutionRequestServiceMap = new HashMap<>();
         ScriptFileExecutionRequestService scriptFileExecutor = ScriptFileExecutionRequestService.getInstance();
-        ScriptNameExecutionRequestService scriptNameExecutor = ScriptNameExecutionRequestService.getInstance();
-
         scriptExecutionRequestServiceMap.put(scriptFileExecutor.appliesTo(), scriptFileExecutor);
+        ScriptNameExecutionRequestService scriptNameExecutor = ScriptNameExecutionRequestService.getInstance();
         scriptExecutionRequestServiceMap.put(scriptNameExecutor.appliesTo(), scriptNameExecutor);
     }
 
     @SuppressWarnings("unchecked")
     public Script getScript(ScriptExecutionRequest scriptExecutionRequest) throws ScriptDoesNotExistException {
-        ScriptExecutionRequestService scriptExecutionRequestService = scriptExecutionRequestServiceMap.get(ScriptExecutionRequest.class);
+        ScriptExecutionRequestService scriptExecutionRequestService = scriptExecutionRequestServiceMap.get(scriptExecutionRequest.getClass());
 
         if (scriptExecutionRequestService == null) {
-            throw new RuntimeException(MessageFormat.format("No ScriptExecutionRequestHandler found for request type {0}", scriptExecutionRequest.getClass()));
+            throw new RuntimeException(MessageFormat.format("No ScriptExecutionRequestHandler found for request type {0}", scriptExecutionRequest.getClass().getSimpleName()));
         } else {
-            return scriptExecutionRequestServiceMap.get(ScriptExecutionRequest.class).getScript(scriptExecutionRequest);
+            return scriptExecutionRequestService.getScript(scriptExecutionRequest);
         }
     }
 }

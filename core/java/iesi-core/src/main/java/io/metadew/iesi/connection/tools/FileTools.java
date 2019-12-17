@@ -6,6 +6,8 @@ import org.apache.commons.io.FileUtils;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 
@@ -23,6 +25,10 @@ public final class FileTools {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void delete(Path fileName) throws IOException {
+        Files.delete(fileName);
     }
 
     public static void delete(String fileName, boolean force) {
@@ -157,6 +163,11 @@ public final class FileTools {
             e.printStackTrace();
         }
         return new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8));
+    }
+
+
+    public static void copyFromFileToFile(Path sourceFile, Path targetFile) throws IOException {
+        Files.copy(sourceFile, targetFile);
     }
 
     // Copy operations

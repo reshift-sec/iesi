@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -37,7 +38,7 @@ public class GenerationExecution {
 	}
 	
 	// Methods
-	public void execute(String generationOutputName) {
+	public void execute(String generationOutputName) throws IOException {
 		LOGGER.info("generation.name=" + this.getGeneration().getName());
 
 		// Log Start

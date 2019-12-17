@@ -6,27 +6,18 @@ import io.metadew.iesi.metadata.definition.generation.GenerationRuleType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 
 public class FrameworkGenerationRuleTypeConfiguration {
 
 	private HashMap<String, GenerationRuleType> generationRuleTypeMap;
 
-	public FrameworkGenerationRuleTypeConfiguration(FrameworkFolderConfiguration frameworkFolderConfiguration) {
-		this.initalizeValues(frameworkFolderConfiguration);
-	}
+	public FrameworkGenerationRuleTypeConfiguration() {
+		this.setGenerationRuleTypeMap(new HashMap<>());
 
-	private void initalizeValues(FrameworkFolderConfiguration frameworkFolderConfiguration) {
-		this.setGenerationRuleTypeMap(new HashMap<String, GenerationRuleType>());
-
-		StringBuilder initFilePath = new StringBuilder();
-		initFilePath.append(frameworkFolderConfiguration.getFolderAbsolutePath("metadata.conf"));
-		initFilePath.append(File.separator);
-		initFilePath.append("GenerationRuleTypes.json");
-
-		DataObjectOperation dataObjectOperation = new DataObjectOperation();
-		dataObjectOperation.setInputFile(initFilePath.toString());
-		dataObjectOperation.parseFile();
+		Path initFilePath = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.conf").resolve("GenerationRuleTypes.json");
+		DataObjectOperation dataObjectOperation = new DataObjectOperation(initFilePath);
 		ObjectMapper objectMapper = new ObjectMapper();
 		for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
 			if (dataObject.getType().equalsIgnoreCase("generationruletype")) {

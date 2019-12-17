@@ -12,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,7 +139,7 @@ public class HostConnection {
 
         // Check if execution can be performed as being on localhost
         if (this.getAllowLocalhostExecution().equalsIgnoreCase("y")) {
-            if (this.localhostFileExists(FrameworkRuntime.getInstance().getLocalHostChallengeFileName())) {
+            if (Files.exists(FrameworkRuntime.getInstance().getLocalHostChallengeFileName())) {
                 result = true;
             } else {
                 result = false;

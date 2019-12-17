@@ -10,6 +10,7 @@ import javax.sql.rowset.CachedRowSet;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Path;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -17,14 +18,14 @@ import java.sql.SQLException;
 public class IterationConfiguration {
 
     private final H2Database database;
-    private final String runCacheFolderName;
+    private final Path runCacheFolderName;
     private final ExecutionControl executionControl;
     private final static String runCacheFileName = "iterationExecutions.db3";
     private final static String PRC_ITERATION_EXEC = "PRC_ITERATION_EXEC";
     private final static int RUNTIME_VAR_VALUE_MAX_LENGTH = 4000;
 
     // Constructors
-    public IterationConfiguration(String runCacheFolderName, ExecutionControl executionControl)  {
+    public IterationConfiguration(Path runCacheFolderName, ExecutionControl executionControl)  {
         this.executionControl = executionControl;
         this.runCacheFolderName = runCacheFolderName;
         // Create database

@@ -19,8 +19,7 @@ public class ComponentTypeConfiguration {
     }
 
     public ComponentType getComponentType(String componentTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), componentTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), componentTypeName));
         ObjectMapper objectMapper = new ObjectMapper();
         ComponentType componentType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 ComponentType.class);

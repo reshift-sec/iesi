@@ -29,6 +29,7 @@ public final class FolderTools {
         return files;
     }
 
+
     public static File[] mergeFileArrays(File[] array1, File[] array2) {
         File[] result = ArrayUtils.addAll(array1, array2);
         return result;

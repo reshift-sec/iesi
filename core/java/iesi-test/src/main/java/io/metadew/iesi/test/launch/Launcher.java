@@ -13,12 +13,10 @@ public final class Launcher {
 		LaunchArgument option = null;
         switch (launcher) {
             case "metadata":
-				LOGGER.info("execute metadata");
                 option = new LaunchArgument(false, "-metadata", "");
 				inputArgs.add(0, option);
                 break;
             case "script":
-				LOGGER.info("execute script");
                 option = new LaunchArgument(false, "-script", "");
                 inputArgs.add(0, option);
 				break;

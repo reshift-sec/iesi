@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -47,10 +48,10 @@ public class ExecutionRuntime {
     private RuntimeVariableConfiguration runtimeVariableConfiguration;
     private IterationVariableConfiguration iterationVariableConfiguration;
     private String runId;
-    private String runCacheFolderName;
+    private Path runCacheFolderName;
 
     //private HashMap<String, StageOperation> stageOperationMap;
-    private HashMap<String, StageOperation> stageOperationMap;
+    // private HashMap<String, StageOperation> stageOperationMap;
     private HashMap<String, KeyValueDataset> datasetMap;
     private HashMap<String, RWorkspace> RWorkspaceMap;
     private HashMap<String, IterationOperation> iterationOperationMap;
@@ -73,13 +74,12 @@ public class ExecutionRuntime {
         this.runId = runId;
 
         // Create cache folder
-        this.runCacheFolderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache") + File.separator + runId;
+        this.runCacheFolderName = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.cache").resolve(runId);
         // FolderTools.createFolder(runCacheFolderName);
         this.runtimeVariableConfiguration = new RuntimeVariableConfiguration(this.runCacheFolderName);
         this.iterationVariableConfiguration = new IterationVariableConfiguration(this.runCacheFolderName, true);
 
         // Initialize maps
-        stageOperationMap = new HashMap<>();
         iterationOperationMap = new HashMap<>();
         executionRuntimeExtensionMap = new HashMap<>();
 
@@ -97,10 +97,10 @@ public class ExecutionRuntime {
     }
 
     public void terminate() {
-        for (StageOperation stageOperation : stageOperationMap.values()) {
-            stageOperation.doCleanup();
-        }
-        stageOperationMap = new HashMap<>();
+//        for (StageOperation stageOperation : stageOperationMap.values()) {
+//            stageOperation.doCleanup();
+//        }
+//        stageOperationMap = new HashMap<>();
     }
 
     public void setRuntimeVariables(ActionExecution actionExecution, ResultSet rs) {
@@ -556,25 +556,10 @@ public class ExecutionRuntime {
 //        }
 //    }
 
-    // Stage Management
-    public void setStage(String stageName, boolean stageCleanup) {
-        StageOperation stageOperation = new StageOperation(stageName, stageCleanup);
-        this.getStageOperationMap().put(stageName, stageOperation);
-    }
-
-    public void setStageOperation(String stageName, StageOperation stageOperation) {
-        this.getStageOperationMap().put(stageName, stageOperation);
-    }
-
-    public StageOperation getStageOperation(String stageName) {
-        return this.getStageOperationMap().get(stageName);
-    }
-
-//    // Repository Management
-//    public void setRepository(ExecutionControl executionControl, String repositoryReferenceName, String repositoryName, String repositoryInstanceName, String repositoryInstanceLabels) throws SQLException {
-//        RepositoryOperation repositoryOperation = new RepositoryOperation(executionControl, repositoryName,
-//                repositoryInstanceName, repositoryInstanceLabels);
-//        this.getRepositoryOperationMap().put(repositoryReferenceName, repositoryOperation);
+//    // Stage Management
+//    public void setStage(String stageName, boolean stageCleanup) {
+//        StageOperation stageOperation = new StageOperation(stageName, stageCleanup);
+//        this.getStageOperationMap().put(stageName, stageOperation);
 //    }
 
     public void setKeyValueDataset(String referenceName, String datasetName, List<String> datasetLabels) throws IOException, SQLException {
@@ -610,15 +595,15 @@ public class ExecutionRuntime {
         return runId;
     }
 
-    public HashMap<String, StageOperation> getStageOperationMap() {
-        return stageOperationMap;
-    }
+//    public HashMap<String, StageOperation> getStageOperationMap() {
+//        return stageOperationMap;
+//    }
 
     public ImpersonationOperation getImpersonationOperation() {
         return impersonationOperation;
     }
 
-    public String getRunCacheFolderName() {
+    public Path getRunCacheFolderName() {
         return runCacheFolderName;
     }
 

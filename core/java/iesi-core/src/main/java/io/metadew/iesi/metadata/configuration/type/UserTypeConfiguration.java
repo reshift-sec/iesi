@@ -20,8 +20,7 @@ public class UserTypeConfiguration {
 
     // Methods
     public UserType getUserType(String userTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), userTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), userTypeName));
         ObjectMapper objectMapper = new ObjectMapper();
         UserType userType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 UserType.class);

@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
+import java.nio.file.Path;
 import java.sql.SQLException;
 
 public class RuntimeActionCacheConfiguration {
@@ -21,8 +22,8 @@ public class RuntimeActionCacheConfiguration {
     private final static int RUNTIME_VAR_VALUE_MAX_LENGTH = 4000;
 
     // Constructors
-    public RuntimeActionCacheConfiguration(String runCacheFolderName) {
-        this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", ""));
+    public RuntimeActionCacheConfiguration(Path runCacheFolderName) {
+        this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName.resolve(runCacheFileName).toString(), "sa", ""));
         String query = "CREATE TABLE " + PRC_RUN_CACHE + " (" +
                 "RUN_ID VARCHAR(200) NOT NULL," +
                 "PRC_ID INT NOT NULL," +

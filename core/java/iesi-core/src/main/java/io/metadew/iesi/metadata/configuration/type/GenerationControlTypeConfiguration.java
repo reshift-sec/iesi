@@ -20,8 +20,7 @@ public class GenerationControlTypeConfiguration {
 
     // Methods
     public GenerationControlType getGenerationControlType(String GenerationControlTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), GenerationControlTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), GenerationControlTypeName));
         ObjectMapper objectMapper = new ObjectMapper();
         GenerationControlType GenerationControlType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 GenerationControlType.class);

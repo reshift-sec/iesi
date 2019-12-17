@@ -133,8 +133,7 @@ public class ModSoapui {
 		String output = this.getActionExecution().getActionControl().getActionRuntime().getRunCacheFolderName() + "soapui";
 		FolderTools.createFolder(output);
 				
-		String command = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules") +
-				File.separator  + "soapui" + File.separator + "bin" + File.separator + "iesi-soapui.cmd";
+		String command = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("modules").resolve("soapui").resolve("bin").resolve("iesi-soapui.cmd").toString();
 		command = command + " -project " + project;
 		if (!testSuite.isEmpty()) command = command + " -suite " + testSuite;
 		if (!testCase.isEmpty()) command = command + " -case " + testCase;

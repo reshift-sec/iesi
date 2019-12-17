@@ -20,8 +20,7 @@ public class GenerationControlRuleTypeConfiguration {
 
     //	// Methods
     public GenerationControlRuleType getGenerationControlRuleType(String GenerationControlRuleTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), GenerationControlRuleTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), GenerationControlRuleTypeName));
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 GenerationControlRuleType.class);

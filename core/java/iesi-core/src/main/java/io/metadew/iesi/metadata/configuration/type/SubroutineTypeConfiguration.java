@@ -19,8 +19,7 @@ public class SubroutineTypeConfiguration {
     }
 
     public SubroutineType getSubroutineType(String subroutineTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), subroutineTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), subroutineTypeName));
         ObjectMapper objectMapper = new ObjectMapper();
         SubroutineType subroutineType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 SubroutineType.class);

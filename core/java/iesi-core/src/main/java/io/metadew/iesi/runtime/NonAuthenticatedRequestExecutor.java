@@ -14,7 +14,6 @@ public class NonAuthenticatedRequestExecutor implements RequestExecutor<NonAuthe
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static NonAuthenticatedRequestExecutor INSTANCE;
-    private final ScriptExecutionRequestListener scriptExecutionRequestListener;
 
     public synchronized static NonAuthenticatedRequestExecutor getInstance() {
         if (INSTANCE == null) {
@@ -24,7 +23,6 @@ public class NonAuthenticatedRequestExecutor implements RequestExecutor<NonAuthe
     }
 
     private NonAuthenticatedRequestExecutor() {
-        this.scriptExecutionRequestListener = new ScriptExecutionRequestListener();
     }
 
     @Override
@@ -39,11 +37,11 @@ public class NonAuthenticatedRequestExecutor implements RequestExecutor<NonAuthe
             ExecutionRequestConfiguration.getInstance().update(executionRequest);
 
             for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
-                scriptExecutionRequestListener.execute(scriptExecutionRequest);
+                ScriptExecutionRequestListener.getInstance().execute(scriptExecutionRequest);
             }
             executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
             ExecutionRequestConfiguration.getInstance().update(executionRequest);
-        } catch (MetadataDoesNotExistException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

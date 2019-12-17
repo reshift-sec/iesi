@@ -6,6 +6,7 @@ import io.metadew.iesi.connection.tools.SQLTools;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
+import java.nio.file.Path;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -18,9 +19,9 @@ public class IterationVariableConfiguration {
     private final static int RUNTIME_VAR_VALUE_MAX_LENGTH = 4000;
 
     // Constructors
-    public IterationVariableConfiguration(String runCacheFolderName, boolean initialize)  {
+    public IterationVariableConfiguration(Path runCacheFolderName, boolean initialize)  {
         // Create database
-        this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", ""));
+        this.database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName.resolve(runCacheFileName).toString(), "sa", ""));
 
         // Initialize
         if (initialize) {

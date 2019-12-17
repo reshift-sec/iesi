@@ -20,7 +20,7 @@ public class ExecutionRequestTask implements Runnable {
 
     @Override
     public void run() {
-        ThreadContext.put("location", FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("logs"));
+        ThreadContext.put("location", FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("logs").toString());
         ThreadContext.put("context.name", FrameworkExecution.getInstance().getFrameworkExecutionContext().getContext().getName());
         ThreadContext.put("context.scope", FrameworkExecution.getInstance().getFrameworkExecutionContext().getContext().getScope());
         ThreadContext.put("fwk.runid", FrameworkRuntime.getInstance().getFrameworkRunId());

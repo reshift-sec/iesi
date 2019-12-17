@@ -3,7 +3,7 @@ package io.metadew.iesi.metadata.operation;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.metadew.iesi.connection.tools.FileTools;
+import com.google.common.io.Files;
 import io.metadew.iesi.metadata.configuration.DataObjectConfiguration;
 import io.metadew.iesi.metadata.definition.DataObject;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
@@ -13,12 +13,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DataObjectOperation {
 
-	private String inputFile;
+	private static final PathMatcher JSON_MATCHER = FileSystems.getDefault().getPathMatcher("regex:.+\\.json");
+	private static final PathMatcher YML_MATCHER = FileSystems.getDefault().getPathMatcher("regex:.+\\.yml");
+
+	private Path inputFile;
 	private List<DataObject> dataObjects;
 	private DataObject dataObject;
 	private DataObjectConfiguration dataObjectConfiguration;
@@ -28,56 +35,25 @@ public class DataObjectOperation {
 	}
 
 	public DataObjectOperation(String inputFile) {
+		this(Paths.get(inputFile));
+	}
+
+	public DataObjectOperation(Path inputFile) {
 		this.inputFile = inputFile;
-		File file = new File(inputFile);
-		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
-			this.parseFile();
+		if (JSON_MATCHER.matches(inputFile)) {
+			parseFile();
+		} else if (YML_MATCHER.matches(inputFile)) {
+			parseYamlFile();
 		} else {
-			this.parseYamlFile();
+			throw new RuntimeException("Data object is neither defined in json or yaml format: " + inputFile.toString());
 		}
 	}
 
-//	public DataObjectOperation(String inputFile) {
-//		this.setInputFile(inputFile);
-//		File file = new File(inputFile);
-//		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
-//			this.parseFile();
-//		} else {
-//			this.parseYamlFile();
-//		}
-//		this.setDataObjectConfiguration(new DataObjectConfiguration(dataObjects));
-//	}
-
-//	public DataObjectOperation(MetadataRepository metadataRepositories, String inputFile) {
-//		this.setInputFile(inputFile);
-//		File file = new File(inputFile);
-//		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
-//			this.parseFile();
-//		} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
-//			this.parseYamlFile();
-//		}
-//		this.setMetadataRepositories(new ArrayList<>());
-//		this.getMetadataRepositories().add(metadataRepositories);
-//		this.setDataObjectConfiguration(new DataObjectConfiguration(dataObjects, metadataRepositories));
-//
-//	}
-
-//	public DataObjectOperation(List<MetadataRepository> metadataRepositoryConfigurationList, String inputFile) {
-//		this.setMetadataRepositories(metadataRepositoryConfigurationList);
-//		this.setInputFile(inputFile);
-//		File file = new File(inputFile);
-//		if (FileTools.getFileExtension(file).equalsIgnoreCase("json")) {
-//			this.parseFile();
-//		} else if (FileTools.getFileExtension(file).equalsIgnoreCase("yml")) {
-//			this.parseYamlFile();
-//		}
-//
-//	}
 
 	// Methods
-	public void parseFile() {
+	private void parseFile() {
 		// Define input file
-		File file = new File(inputFile);
+		File file = inputFile.toFile();
 		BufferedReader bufferedReader = null;
 		try {
 			bufferedReader = new BufferedReader(new FileReader(file));
@@ -113,9 +89,9 @@ public class DataObjectOperation {
 		}
 	}
 
-	public void parseYamlFile() {
+	private void parseYamlFile() {
 		// Define input file
-		File file = new File(inputFile);
+		File file = inputFile.toFile();
 		BufferedReader bufferedReader = null;
 		try {
 			bufferedReader = new BufferedReader(new FileReader(file));
@@ -195,10 +171,6 @@ public class DataObjectOperation {
 			this.setDataObjectConfiguration(new DataObjectConfiguration(dataObjects));
 			this.getDataObjectConfiguration().saveToMetadataRepository(metadataRepository);
 		}
-	}
-
-	public void setInputFile(String inputFile) {
-		this.inputFile = FilenameUtils.normalize(inputFile);
 	}
 
 	public DataObjectConfiguration getDataObjectConfiguration() {

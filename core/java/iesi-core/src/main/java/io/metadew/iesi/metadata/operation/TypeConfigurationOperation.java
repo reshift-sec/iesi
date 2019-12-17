@@ -1,10 +1,11 @@
 package io.metadew.iesi.metadata.operation;
 
-import io.metadew.iesi.connection.tools.FileTools;
 import io.metadew.iesi.framework.configuration.FrameworkFolderConfiguration;
 import io.metadew.iesi.framework.operation.FrameworkPluginService;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 public class TypeConfigurationOperation {
 
@@ -12,29 +13,25 @@ public class TypeConfigurationOperation {
 
     }
 
-    public static String getTypeConfigurationFile(String dataObjectType, String typeName) {
+    public static Path getTypeConfigurationFile(String dataObjectType, String typeName) {
         String configurationObject = dataObjectType + File.separator + typeName + ".json";
-        String conf = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.conf") + File.separator + configurationObject;
+        Path conf = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.conf").resolve(configurationObject);
 
-        if (!FileTools.exists(conf)) {
-            FrameworkPluginService frameworkPluginService = new FrameworkPluginService();
-            if (frameworkPluginService.verifyPlugins(configurationObject)) {
-                conf = frameworkPluginService.getPluginConfigurationFile();
-            } else {
-                throw new RuntimeException("action.type.notfound");
-            }
+        if (Files.exists(conf)) {
+            return conf;
+        } else {
+            return new FrameworkPluginService().getConfigFile(configurationObject);
         }
-        return conf;
     }
 
-    public static String getMappingConfigurationFile(String dataObjectType, String mappingName) {
+    public static Path getMappingConfigurationFile(String dataObjectType, String mappingName) {
         String configurationObject = mappingName + ".json";
-        String conf = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data.mapping")
-                + File.separator + configurationObject;
-        if (!FileTools.exists(conf)) {
+        Path conf = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("data.mapping").resolve(configurationObject);
+        if (Files.exists(conf)) {
+            return conf;
+        } else {
             throw new RuntimeException(MessageFormat.format("mapping.notfound=cannot find {0}", conf));
         }
-        return conf;
     }
 
 

@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import java.io.File;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -20,8 +21,8 @@ public class RuntimeVariableConfiguration {
     private final static int RUNTIME_VAR_VALUE_MAX_LENGTH = 4000;
 
     // Constructors
-    public RuntimeVariableConfiguration(String runCacheFolderName) {
-        database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName + File.separator + runCacheFileName, "sa", ""));
+    public RuntimeVariableConfiguration(Path runCacheFolderName) {
+        database = new H2Database(new H2MemoryDatabaseConnection(runCacheFolderName.resolve(runCacheFileName).toString(), "sa", ""));
         String query = "CREATE TABLE " + PRC_RUN_VAR + " (" +
                 "RUN_ID VARCHAR(200) NOT NULL," +
                 "PRC_ID INT NOT NULL," +

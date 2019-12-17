@@ -13,11 +13,6 @@ public abstract class ScriptExecutor {
         this.queue = Executors.newFixedThreadPool(threadSize);
     }
 
-
-    public void start(ScriptExecutionRequest scriptExecutionRequest) {
-
-    }
-
     public abstract void execute(ScriptExecutionRequest scriptExecutionRequest) throws Exception;
 
     public ExecutorService getQueue() {

@@ -10,6 +10,7 @@ import io.metadew.iesi.metadata.configuration.execution.ExecutionRequestConfigur
 import io.metadew.iesi.metadata.configuration.execution.exception.ExecutionRequestDoesNotExistException;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequest;
 import io.metadew.iesi.metadata.definition.execution.ExecutionRequestStatus;
+import io.metadew.iesi.runtime.script.ScriptExecutionRequestListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
@@ -32,10 +33,11 @@ public class ExecutionRequestListener implements Runnable {
                 .orElse(4);
         LOGGER.info(MessageFormat.format("starting listener with thread pool size {0}", threadSize));
         executor = Executors.newFixedThreadPool(threadSize);
+        ScriptExecutionRequestListener.getInstance();
     }
 
     public void run() {
-        ThreadContext.put("location", FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("logs"));
+        ThreadContext.put("location", FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("logs").toString());
         ThreadContext.put("context.name", FrameworkExecution.getInstance().getFrameworkExecutionContext().getContext().getName());
         ThreadContext.put("context.scope", FrameworkExecution.getInstance().getFrameworkExecutionContext().getContext().getScope());
         ThreadContext.put("fwk.runid", FrameworkRuntime.getInstance().getFrameworkRunId());

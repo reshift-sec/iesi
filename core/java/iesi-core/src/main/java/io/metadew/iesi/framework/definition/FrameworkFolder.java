@@ -1,10 +1,13 @@
 package io.metadew.iesi.framework.definition;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class FrameworkFolder {
 
     private String name;
     private String path;
-    private String absolutePath;
+    private Path absolutePath;
     private String label;
     private String description;
     private String permissions;
@@ -17,7 +20,7 @@ public class FrameworkFolder {
     public FrameworkFolder(String name, String path, String absolutePath, String label, String description, String permissions) {
         this.name = name;
         this.path = path;
-        this.absolutePath = absolutePath;
+        this.absolutePath = Paths.get(absolutePath);
         this.label = label;
         this.description = description;
         this.permissions = permissions;
@@ -64,11 +67,14 @@ public class FrameworkFolder {
         this.permissions = permissions;
     }
 
-    public String getAbsolutePath() {
+    public Path getAbsolutePath() {
         return absolutePath;
     }
 
     public void setAbsolutePath(String absolutePath) {
+        this.absolutePath = Paths.get(absolutePath);
+    }
+    public void setAbsolutePath(Path absolutePath) {
         this.absolutePath = absolutePath;
     }
 

@@ -24,7 +24,6 @@ public class AuthenticatedRequestExecutor implements RequestExecutor<Authenticat
     private final Boolean authenticationEnabled;
 
     private static AuthenticatedRequestExecutor INSTANCE;
-    private final ScriptExecutionRequestListener scriptExecutionRequestListener;
 
     public synchronized static AuthenticatedRequestExecutor getInstance() {
         if (INSTANCE == null) {
@@ -35,7 +34,6 @@ public class AuthenticatedRequestExecutor implements RequestExecutor<Authenticat
 
     private AuthenticatedRequestExecutor() {
         this.userAccessConfiguration = new UserAccessConfiguration();
-        this.scriptExecutionRequestListener = new ScriptExecutionRequestListener();
         this.authenticationEnabled = FrameworkSettingConfiguration.getInstance().getSettingPath("guard.authenticate")
                 .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath).equalsIgnoreCase("y"))
                 .orElse(false);
@@ -59,7 +57,7 @@ public class AuthenticatedRequestExecutor implements RequestExecutor<Authenticat
 
             for (ScriptExecutionRequest scriptExecutionRequest : executionRequest.getScriptExecutionRequests()) {
 //                try {
-                scriptExecutionRequestListener.execute(scriptExecutionRequest);
+                ScriptExecutionRequestListener.getInstance().execute(scriptExecutionRequest);
 //                } catch (MetadataDoesNotExistException e) {
 //                    LOGGER.info("script execution " + scriptExecutionRequest.toString() + " of " + executionRequest.toString() + "pre-maturely ended due to " + e.toString());
 //
@@ -76,7 +74,7 @@ public class AuthenticatedRequestExecutor implements RequestExecutor<Authenticat
             executionRequest.updateExecutionRequestStatus(ExecutionRequestStatus.COMPLETED);
             ExecutionRequestConfiguration.getInstance().update(executionRequest);
 
-        } catch (MetadataDoesNotExistException e) {
+        } catch (Exception e) {
             StringWriter stackTrace = new StringWriter();
             e.printStackTrace(new PrintWriter(stackTrace));
             LOGGER.info("exception=" + e);

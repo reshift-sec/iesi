@@ -21,8 +21,7 @@ public class GenerationRuleTypeConfiguration {
 
     // Methods
     public GenerationRuleType getGenerationRuleType(String GenerationRuleTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), GenerationRuleTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), GenerationRuleTypeName));
         ObjectMapper objectMapper = new ObjectMapper();
         GenerationRuleType GenerationRuleType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 GenerationRuleType.class);

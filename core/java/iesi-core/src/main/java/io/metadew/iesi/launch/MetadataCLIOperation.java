@@ -85,7 +85,7 @@ public class MetadataCLIOperation extends CLIOperation {
             String config = getCommandLine().getOptionValue("config");
 
             ConfigFile configFile = FrameworkControl.getInstance().getConfigFile("keyvalue",
-                    FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("conf") + File.separator + config);
+                    FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("conf").resolve(config).toString());
 
             metadataRepositories = new MetadataRepositoryConfiguration(configFile).toMetadataRepositories();
 

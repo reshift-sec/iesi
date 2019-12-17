@@ -1,9 +1,12 @@
 package io.metadew.iesi.framework.definition;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class FrameworkPlugin {
 
     private String name;
-    private String path;
+    private Path path;
 
     //Constructors
     public FrameworkPlugin() {
@@ -11,6 +14,11 @@ public class FrameworkPlugin {
     }
 
     public FrameworkPlugin(String name, String path) {
+        this.name = name;
+        this.path = Paths.get(path);
+    }
+
+    public FrameworkPlugin(String name, Path path) {
         this.name = name;
         this.path = path;
     }
@@ -24,11 +32,11 @@ public class FrameworkPlugin {
         this.name = name;
     }
 
-    public String getPath() {
+    public Path getPath() {
         return path;
     }
 
-    public void setPath(String path) {
+    public void setPath(Path path) {
         this.path = path;
     }
 

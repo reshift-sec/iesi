@@ -11,6 +11,9 @@ import io.metadew.iesi.metadata.definition.generation.GenerationRule;
 import io.metadew.iesi.script.execution.ExecutionControl;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 public class GenerationRuntime {
@@ -26,20 +29,20 @@ public class GenerationRuntime {
 	private boolean printProgressBar = false;
 
 	// Constructors
-	public GenerationRuntime(FrameworkExecution frameworkExecution, ExecutionControl executionControl) {
+	public GenerationRuntime(FrameworkExecution frameworkExecution, ExecutionControl executionControl) throws IOException {
 		this.setFrameworkExecution(frameworkExecution);
 		this.setExecutionControl(executionControl);
 		this.setGenerationObjectExecution(new GenerationObjectExecution());
 		this.createTemporaryDatabase();
 	}
 
-	private void createTemporaryDatabase() {
+	private void createTemporaryDatabase() throws IOException {
 		// Create work database
-		String temporaryDatabaseFolder = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.tmp")
-				+ File.separator + this.getExecutionControl().getRunId();
-		FolderTools.createFolder(temporaryDatabaseFolder);
+		Path temporaryDatabaseFolder = FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("run.tmp")
+				.resolve(this.getExecutionControl().getRunId());
+		Files.createDirectories(temporaryDatabaseFolder);
 		String temporaryDatabaseFile = "genTempDb" + ".db3";
-		SqliteDatabaseConnection sqliteDatabaseConnection = new SqliteDatabaseConnection(temporaryDatabaseFolder + File.separator + temporaryDatabaseFile);
+		SqliteDatabaseConnection sqliteDatabaseConnection = new SqliteDatabaseConnection(temporaryDatabaseFolder.resolve(temporaryDatabaseFile));
 		this.setTemporaryDatabaseConnection(new SqliteDatabase(sqliteDatabaseConnection));
 		
 		// Optimize journalling

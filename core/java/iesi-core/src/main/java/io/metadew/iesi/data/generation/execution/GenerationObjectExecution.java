@@ -10,11 +10,17 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GenerationObjectExecution {
 
     public static final String DEFAULT_LOCALE = "en";
+    private static final PathMatcher YML_MATCHER = FileSystems.getDefault().getPathMatcher("glob:*.yml");
 
     private Address address;
     private App app;
@@ -90,9 +96,10 @@ public class GenerationObjectExecution {
         int i = 0;
         // Default Configuration
         try {
-            for (File file : FolderTools.getFilesInFolder(
-                    FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.gen"),
-                    "regex", ".+\\.yml")) {
+            for (File file : Files.walk(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.gen"))
+                            .filter(YML_MATCHER::matches)
+                            .map(Path::toFile)
+                            .collect(Collectors.toList())) {
 
                 if (i == 0) {
                     data = loadData(file.getAbsolutePath());
@@ -108,9 +115,10 @@ public class GenerationObjectExecution {
 
         // User configuration
         try {
-            for (File file : FolderTools.getFilesInFolder(
-                    FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.conf"),
-                    "regex", ".+\\.yml")) {
+            for (File file : Files.walk(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.conf"))
+                    .filter(YML_MATCHER::matches)
+                    .map(Path::toFile)
+                    .collect(Collectors.toList())) {
 
                 if (i == 0) {
                     data = loadData(file.getAbsolutePath());

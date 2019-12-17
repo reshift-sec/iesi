@@ -19,8 +19,7 @@ public class ConnectionTypeConfiguration {
     }
 
     public ConnectionType getConnectionType(String connectionTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), connectionTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), connectionTypeName));
         ObjectMapper objectMapper = new ObjectMapper();
         ConnectionType connectionType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 ConnectionType.class);

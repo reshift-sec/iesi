@@ -40,9 +40,7 @@ public abstract class MetadataRepository {
 		metadataObjects = new ArrayList<>();
 		metadataTables = new ArrayList<>();
 
-		DataObjectOperation dataObjectOperation = new DataObjectOperation();
-		dataObjectOperation.setInputFile(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def") + File.separator + getObjectDefinitionFileName());
-		dataObjectOperation.parseFile();
+		DataObjectOperation dataObjectOperation = new DataObjectOperation(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def").resolve(getObjectDefinitionFileName()));
 		ObjectMapper objectMapper = new ObjectMapper();
 		//
 		for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
@@ -51,9 +49,7 @@ public abstract class MetadataRepository {
 			}
 		}
 
-		dataObjectOperation = new DataObjectOperation();
-		dataObjectOperation.setInputFile(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def") + File.separator + getDefinitionFileName());
-		dataObjectOperation.parseFile();
+		dataObjectOperation = new DataObjectOperation(FrameworkFolderConfiguration.getInstance().getFolderAbsolutePath("metadata.def").resolve(getDefinitionFileName()));
 		//
 		for (DataObject dataObject : dataObjectOperation.getDataObjects()) {
 			if (dataObject.getType().equalsIgnoreCase("metadatatable")) {

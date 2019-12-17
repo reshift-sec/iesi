@@ -2,6 +2,8 @@ package io.metadew.iesi.framework.execution;
 
 import org.apache.logging.log4j.ThreadContext;
 
+import java.io.IOException;
+
 public class FrameworkExecution {
 
     private FrameworkExecutionContext frameworkExecutionContext;
@@ -17,11 +19,11 @@ public class FrameworkExecution {
 
     private FrameworkExecution() {}
 
-    public void init() {
+    public void init() throws IOException {
         init(new FrameworkExecutionContext());
     }
 
-    public void init(FrameworkExecutionContext frameworkExecutionContext) {
+    public void init(FrameworkExecutionContext frameworkExecutionContext) throws IOException {
             this.frameworkExecutionContext = frameworkExecutionContext;
         ThreadContext.put("context.name", frameworkExecutionContext.getContext().getName());
         ThreadContext.put("context.scope", frameworkExecutionContext.getContext().getScope());

@@ -7,11 +7,12 @@ import io.metadew.iesi.framework.definition.FrameworkInitializationFile;
 import io.metadew.iesi.framework.definition.FrameworkPlugin;
 import io.metadew.iesi.framework.operation.FrameworkPluginService;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import javax.sound.midi.SysexMessage;
+import java.io.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -41,11 +42,11 @@ public class FrameworkControl {
 //        this.logonType = logonType;
 //    }
 
-    public void init(FrameworkInitializationFile frameworkInitializationFile) {
+    public void init(FrameworkInitializationFile frameworkInitializationFile) throws IOException {
         this.properties = new Properties();
         this.metadataRepositoryConfigurations = new ArrayList<>();
         this.frameworkPlugins = new ArrayList<>();
-        properties.put(FrameworkConfiguration.getInstance().getFrameworkCode() + ".home", FrameworkConfiguration.getInstance().getFrameworkHome());
+        addSetting(FrameworkConfiguration.getInstance().getFrameworkCode() + ".home", FrameworkConfiguration.getInstance().getFrameworkHome().toString().replace("\\", "\\\\"));
         readSettingFiles(frameworkInitializationFile.getName());
     }
 
@@ -59,10 +60,8 @@ public class FrameworkControl {
     }
 
     // Methods
-    private void readSettingFiles(String initializationFile) {
-    	try {
-			File file = new File(this.resolveConfiguration("#" + FrameworkConfiguration.getInstance().getFrameworkCode()
-					+ ".home#/conf/" + initializationFile));
+    private void readSettingFiles(String initializationFile) throws IOException {
+			File file = Paths.get(this.resolveConfiguration("#" + FrameworkConfiguration.getInstance().getFrameworkCode()+ ".home#")).resolve("conf").resolve(initializationFile).toFile();
 			BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
 			String readLine;
 
@@ -95,10 +94,6 @@ public class FrameworkControl {
 					properties.putAll(configFile.getProperties());
 				}
 			}
-		} catch (IOException e) {
-    		throw new RuntimeException(e);
-		}
-
     }
 
     public void setSettingsList(String input) {
@@ -111,7 +106,7 @@ public class FrameworkControl {
         int closePos;
         String variable_char = "#";
         String midBit;
-        String replaceValue = null;
+        String replaceValue;
         String temp = input;
         while (temp.indexOf(variable_char) > 0 || temp.startsWith(variable_char)) {
             openPos = temp.indexOf(variable_char);
@@ -125,12 +120,11 @@ public class FrameworkControl {
             } catch (Exception e) {
                 replaceValue = null;
             }
-
             // Replacing the value if found
             if (replaceValue != null) {
                 input = input.replaceAll(variable_char + midBit + variable_char, replaceValue);
             }
-            temp = temp.substring(closePos + 1, temp.length());
+            temp = temp.substring(closePos + 1);
 
         }
         return input;

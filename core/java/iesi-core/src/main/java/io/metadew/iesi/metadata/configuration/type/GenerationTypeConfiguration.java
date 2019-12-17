@@ -19,8 +19,7 @@ public class GenerationTypeConfiguration {
     }
 
     public GenerationType getGenerationType(String GenerationTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), GenerationTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), GenerationTypeName));
         ObjectMapper objectMapper = new ObjectMapper();
         GenerationType GenerationType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 GenerationType.class);

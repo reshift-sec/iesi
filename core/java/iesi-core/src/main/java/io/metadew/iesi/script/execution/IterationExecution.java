@@ -29,8 +29,7 @@ public class IterationExecution {
         this.setIterationName(iterationName);
         this.setIterationOperation(
                 this.getExecutionControl().getExecutionRuntime().getIterationOperation(this.getIterationName()));
-        this.setIterationConfiguration(new IterationConfiguration(
-                this.getExecutionControl().getExecutionRuntime().getRunCacheFolderName(), executionControl));
+        this.setIterationConfiguration(new IterationConfiguration(this.getExecutionControl().getExecutionRuntime().getRunCacheFolderName(), executionControl));
         if (this.getIterationOperation().getIteration().getType().trim().equalsIgnoreCase("values")) {
             this.getIterationConfiguration().setIterationValues(this.getExecutionControl().getRunId(),
                     this.getIterationOperation().getIteration().getName(),

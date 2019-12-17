@@ -20,8 +20,7 @@ public class ScriptTypeConfiguration {
 
     // Methods
     public ScriptType getScriptType(String scriptTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), scriptTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(TypeConfigurationOperation.getTypeConfigurationFile(this.getDataObjectType(), scriptTypeName));
         ObjectMapper objectMapper = new ObjectMapper();
         ScriptType scriptType = objectMapper.convertValue(dataObjectOperation.getDataObject().getData(),
                 ScriptType.class);

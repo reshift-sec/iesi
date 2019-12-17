@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.annotation.Order;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 @Configuration
@@ -29,7 +30,7 @@ public class IesiConfiguration {
 
     @Bean
     @Order(0)
-    public FrameworkInstance frameworkInstance(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext frameworkExecutionContext) throws SQLException {
+    public FrameworkInstance frameworkInstance(FrameworkInitializationFile frameworkInitializationFile, FrameworkExecutionContext frameworkExecutionContext) throws SQLException, IOException {
         FrameworkInstance.getInstance().init(frameworkInitializationFile, frameworkExecutionContext);
         return FrameworkInstance.getInstance();
     }

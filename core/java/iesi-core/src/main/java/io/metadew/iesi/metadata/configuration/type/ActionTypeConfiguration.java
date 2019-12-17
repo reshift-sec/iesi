@@ -5,6 +5,8 @@ import io.metadew.iesi.metadata.definition.action.type.ActionType;
 import io.metadew.iesi.metadata.operation.DataObjectOperation;
 import io.metadew.iesi.metadata.operation.TypeConfigurationOperation;
 
+import java.nio.file.Path;
+
 public class ActionTypeConfiguration {
 
     private String dataObjectType = "ActionType";
@@ -13,8 +15,7 @@ public class ActionTypeConfiguration {
     }
 
     public ActionType getActionType(String actionTypeName) {
-        String conf = TypeConfigurationOperation.getTypeConfigurationFile(dataObjectType, actionTypeName);
-        DataObjectOperation dataObjectOperation = new DataObjectOperation(conf);
+        DataObjectOperation dataObjectOperation = new DataObjectOperation(TypeConfigurationOperation.getTypeConfigurationFile(dataObjectType, actionTypeName));
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.convertValue(dataObjectOperation.getDataObject().getData(), ActionType.class);
     }

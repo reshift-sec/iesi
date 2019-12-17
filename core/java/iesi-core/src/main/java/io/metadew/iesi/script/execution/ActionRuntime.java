@@ -6,12 +6,13 @@ import io.metadew.iesi.script.operation.ActionParameterOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.*;
 
 public class ActionRuntime {
 
     private RuntimeActionCacheConfiguration runtimeActionCacheConfiguration;
-    private String runCacheFolderName;
+    private Path runCacheFolderName;
     private String runId;
     private Long processId;
     private List<RouteOperation> routeOperations;
@@ -22,8 +23,8 @@ public class ActionRuntime {
     }
 
     // Methods
-    public void initActionCache(String actionName, String runCacheFolderName) {
-        this.runCacheFolderName = runCacheFolderName + File.separator + processId;
+    public void initActionCache(String actionName, Path runCacheFolderName) {
+        this.runCacheFolderName = runCacheFolderName.resolve(Long.toString(processId));
         // FolderTools.createFolder(this.runCacheFolderName);
         this.runtimeActionCacheConfiguration = new RuntimeActionCacheConfiguration(this.runCacheFolderName);
     }
@@ -106,12 +107,8 @@ public class ActionRuntime {
         return input;
     }
 
-    public String getRunCacheFolderName() {
+    public Path getRunCacheFolderName() {
         return runCacheFolderName;
-    }
-
-    public void setRunCacheFolderName(String runCacheFolderName) {
-        this.runCacheFolderName = runCacheFolderName;
     }
 
     public String getRunId() {
