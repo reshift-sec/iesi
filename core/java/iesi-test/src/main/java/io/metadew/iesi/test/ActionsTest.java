@@ -28,10 +28,7 @@ public class ActionsTest {
                         .desc("Absolute location of the iesi repository").build())
                 .addOption(Option.builder("sandbox").hasArg().required().desc("Absolute location of the iesi sandbox")
                         .build())
-                .addOption(Option.builder("instance").hasArg().required().desc("Name of the iesi instance").build())
-                .addOption(Option.builder("version").hasArg().required().desc("Version of the iesi instance").build())
-                .addOption(Option.builder("ini").hasArg().desc("ini file of the iesi instance").build())
-                .addOption(Option.builder("create").desc("only create the repository without loading and execution").build());
+                .addOption(Option.builder("ini").hasArg().desc("ini file of the iesi instance").build());
 
 
         CommandLineParser parser = new DefaultParser();
@@ -39,11 +36,6 @@ public class ActionsTest {
 
         String repository = cmd.getOptionValue("repository");
         String sandbox = cmd.getOptionValue("sandbox");
-        String instance = cmd.getOptionValue("instance");
-        String version = cmd.getOptionValue("version");
-
-        String instanceHome = sandbox + File.separator + instance;
-        String versionHome = instanceHome + File.separator + version;
 
         String testDataHome = repository + File.separator + "test" + File.separator + "data";
         String testDockerHome = repository + File.separator + "test" + File.separator + "docker";
@@ -62,9 +54,9 @@ public class ActionsTest {
         String connectionsTestConfigurationHome = repository + File.separator + "test" + File.separator
                 + "metadata" + File.separator + "conf" + File.separator + "connections";
 
-        String versionHomeConfFolder = versionHome + File.separator + "conf";
-        String dataFolder = versionHome + File.separator + "data";
-        String testDataFolder = versionHome + File.separator + "data" + File.separator + "iesi-test";
+        String versionHomeConfFolder = sandbox + File.separator + "conf";
+        String dataFolder = sandbox + File.separator + "data";
+        String testDataFolder = sandbox + File.separator + "data" + File.separator + "iesi-test";
         String frameworkTestDataFolder = testDataFolder + File.separator + "fwk";
         String setupTestConfDataFolder = frameworkTestDataFolder + File.separator + "setup";
         String actionsTestConfDataFolder = frameworkTestDataFolder + File.separator + "actions";
@@ -75,7 +67,7 @@ public class ActionsTest {
 
         String dockerTestDataFolder = testDataFolder + File.separator + "docker";
 
-        String metadataInNewFolder = versionHome + File.separator + "metadata" + File.separator + "in"
+        String metadataInNewFolder = sandbox + File.separator + "metadata" + File.separator + "in"
                 + File.separator + "new";
 
         FolderTools.createFolder(testDataFolder);
@@ -141,95 +133,68 @@ public class ActionsTest {
         List<LaunchArgument> metadataCreateArgs = new ArrayList<>();
         LaunchArgument ini = new LaunchArgument(true, "-ini", cmd.getOptionValue("ini", "iesi-test.ini"));
         metadataCreateArgs.add(ini);
-        LaunchArgument exit = new LaunchArgument(true, "-exit", "false");
-        metadataCreateArgs.add(exit);
-        LaunchArgument create = new LaunchArgument(false, "-create", "");
-        metadataCreateArgs.add(create);
+        LaunchArgument metadata = new LaunchArgument(false, "metadata", "");
+        metadataCreateArgs.add(metadata);
         LaunchArgument type = new LaunchArgument(true, "-type", "general");
         metadataCreateArgs.add(type);
-        Launcher.execute("metadata", metadataCreateArgs);
-
-        if (cmd.hasOption("create")) {
-            System.exit(0);
-        }
-
+        LaunchArgument create = new LaunchArgument(false, "create", "");
+        metadataCreateArgs.add(create);
+        Launcher.execute(metadataCreateArgs);
 
         File[] confs = ArrayUtils.addAll(
                 FolderTools.getFilesInFolder(actionsTestDefDataFolder, "regex", ".+\\.yml"),
                 FolderTools.getFilesInFolder(instructionsTestConfDataFolder, "regex", ".+\\.yml"));
 
-        List<LaunchArgument> inputArgs = new ArrayList<>();
-        inputArgs.add(ini);
-        inputArgs.add(exit);
-        LaunchArgument load = new LaunchArgument(false, "-load", "");
-        inputArgs.add(load);
-        inputArgs.add(type);
+        List<LaunchArgument> inputMetadataArgs = new ArrayList<>();
+        inputMetadataArgs.add(ini);
+        inputMetadataArgs.add(metadata);
+        inputMetadataArgs.add(type);
+        LaunchArgument load = new LaunchArgument(false, "load", "");
+        inputMetadataArgs.add(load);
 
         for (final File conf : confs) {
             FileTools.copyFromFileToFile(conf.getAbsolutePath(),
                     metadataInNewFolder + File.separator + conf.getName());
-            LaunchArgument files = new LaunchArgument(true, "-files", conf.getAbsolutePath());
-            inputArgs.add(files);
-            Launcher.execute("metadata", inputArgs);
-            inputArgs.remove(files);
+            Launcher.execute(inputMetadataArgs);
         }
 
         // Load setup scripts
         confs = FolderTools.getFilesInFolder(setupTestConfDataFolder, "regex", ".+\\.yml");
 
-        inputArgs.add(ini);
-        inputArgs.add(exit);
-        inputArgs.add(load);
-        inputArgs.add(type);
+//        inputMetadataArgs.add(ini);
+//        inputMetadataArgs.add(load);
+//        inputMetadataArgs.add(type);
 
         for (final File conf : confs) {
             FileTools.copyFromFileToFile(conf.getAbsolutePath(),
                     metadataInNewFolder + File.separator + conf.getName());
-            LaunchArgument files = new LaunchArgument(true, "-files", conf.getAbsolutePath());
-            inputArgs.add(files);
-            Launcher.execute("metadata", inputArgs);
-            inputArgs.remove(files);
+            Launcher.execute(inputMetadataArgs);
         }
 
         // Load action tests
         confs = FolderTools.getFilesInFolder(actionsTestConfDataFolder, "regex", ".+\\.yml");
 
-        inputArgs.add(ini);
-        inputArgs.add(exit);
-        inputArgs.add(load);
-        inputArgs.add(type);
-
         for (final File conf : confs) {
             FileTools.copyFromFileToFile(conf.getAbsolutePath(),
                     metadataInNewFolder + File.separator + conf.getName());
-            LaunchArgument files = new LaunchArgument(true, "-files", conf.getAbsolutePath());
-            inputArgs.add(files);
-            Launcher.execute("metadata", inputArgs);
-            inputArgs.remove(files);
+            Launcher.execute(inputMetadataArgs);
         }
 
         // Load connections tests
         confs = FolderTools.getFilesInFolder(connectionsTestConfDataFolder, "regex", ".+\\.yml");
 
-        inputArgs.add(ini);
-        inputArgs.add(exit);
-        inputArgs.add(load);
-        inputArgs.add(type);
-
         for (final File conf : confs) {
             FileTools.copyFromFileToFile(conf.getAbsolutePath(),
                     metadataInNewFolder + File.separator + conf.getName());
-            LaunchArgument files = new LaunchArgument(true, "-files", conf.getAbsolutePath());
-            inputArgs.add(files);
-            Launcher.execute("metadata", inputArgs);
-            inputArgs.remove(files);
+            Launcher.execute(inputMetadataArgs);
         }
 
         // ------------
 
         List<LaunchArgument> scriptInputArgs = new ArrayList<>();
         scriptInputArgs.add(ini);
-        scriptInputArgs.add(exit);
+        LaunchArgument execute = new LaunchArgument(false, "execute", "");
+        scriptInputArgs.add(execute);
         LaunchArgument env = new LaunchArgument(true, "-env", "iesi-test");
         scriptInputArgs.add(env);
         LaunchArgument script;
@@ -247,11 +212,11 @@ public class ActionsTest {
             // Parameter list
             LaunchArgument paramList = null;
             if (launchItem.getParameterList() != null && !launchItem.getParameterList().trim().isEmpty()) {
-                paramList = new LaunchArgument(true, "-paramlist", launchItem.getParameterList());
+                paramList = new LaunchArgument(true, "-parameters", launchItem.getParameterList());
                 scriptInputArgs.add(paramList);
             }
 
-            Launcher.execute("script", scriptInputArgs);
+            Launcher.execute(scriptInputArgs);
 
             scriptInputArgs.remove(script);
             scriptInputArgs.remove(paramList);
@@ -268,11 +233,11 @@ public class ActionsTest {
             // Parameter list
             LaunchArgument paramList = null;
             if (launchItem.getParameterList() != null && !launchItem.getParameterList().trim().isEmpty()) {
-                paramList = new LaunchArgument(true, "-paramlist", launchItem.getParameterList());
+                paramList = new LaunchArgument(true, "-parameters", launchItem.getParameterList());
                 scriptInputArgs.add(paramList);
             }
 
-            Launcher.execute("script", scriptInputArgs);
+            Launcher.execute(scriptInputArgs);
 
             scriptInputArgs.remove(script);
             scriptInputArgs.remove(paramList);
@@ -289,11 +254,11 @@ public class ActionsTest {
             // Parameter list
             LaunchArgument paramList = null;
             if (launchItem.getParameterList() != null && !launchItem.getParameterList().trim().isEmpty()) {
-                paramList = new LaunchArgument(true, "-paramlist", launchItem.getParameterList());
+                paramList = new LaunchArgument(true, "-parameters", launchItem.getParameterList());
                 scriptInputArgs.add(paramList);
             }
 
-            Launcher.execute("script", scriptInputArgs);
+            Launcher.execute(scriptInputArgs);
 
             scriptInputArgs.remove(script);
             scriptInputArgs.remove(paramList);
@@ -310,11 +275,11 @@ public class ActionsTest {
             // Parameter list
             LaunchArgument paramList = null;
             if (launchItem.getParameterList() != null && !launchItem.getParameterList().trim().isEmpty()) {
-                paramList = new LaunchArgument(true, "-paramlist", launchItem.getParameterList());
+                paramList = new LaunchArgument(true, "-parameters", launchItem.getParameterList());
                 scriptInputArgs.add(paramList);
             }
 
-            Launcher.execute("script", scriptInputArgs);
+            Launcher.execute(scriptInputArgs);
 
             scriptInputArgs.remove(script);
             scriptInputArgs.remove(paramList);

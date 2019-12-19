@@ -1,5 +1,7 @@
 package io.metadew.iesi.script.execution;
 
+import io.metadew.iesi.metadata.definition.impersonation.Impersonation;
+import io.metadew.iesi.metadata.definition.impersonation.ImpersonationParameter;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.ScriptExecutionBuildException;
 import org.apache.logging.log4j.ThreadContext;
@@ -189,5 +191,11 @@ public class ScriptExecutionBuilder {
         } else {
             return runId;
         }
+    }
+
+    public ScriptExecutionBuilder impersonation(Impersonation impersonation) {
+        impersonation.getParameters()
+                .forEach(impersonationParameter -> impersonations.put(impersonationParameter.getImpersonatedConnection(), impersonationParameter.getConnection()));
+        return this;
     }
 }

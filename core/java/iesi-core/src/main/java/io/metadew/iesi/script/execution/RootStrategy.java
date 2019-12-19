@@ -25,7 +25,7 @@ public class RootStrategy implements RootingStrategy {
     public void endExecution(ScriptExecution scriptExecution) {
         scriptExecution.getExecutionControl().terminate();
         if (scriptExecution.isExitOnCompletion()) {
-            scriptExecution.getExecutionControl().endExecution();
+            // scriptExecution.getExecutionControl().endExecution();
         }
         scriptExecution.getExecutionControl().getExecutionRuntime().getRuntimeVariableConfiguration().shutdown();
     }

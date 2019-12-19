@@ -74,6 +74,7 @@ public abstract class MetadataRepository {
 	}
 
 	private void dropTable(MetadataTable metadataTable) {
+		LOGGER.info("Dropping table " + metadataTable.getName());
 		repositoryCoordinator.dropTable(metadataTable);
 	}
 
@@ -82,6 +83,7 @@ public abstract class MetadataRepository {
 	}
 
 	private void cleanTable(MetadataTable metadataTable) {
+		LOGGER.info("Cleaning table " + metadataTable.getName());
 		repositoryCoordinator.cleanTable(metadataTable);
 	}
 
@@ -120,6 +122,7 @@ public abstract class MetadataRepository {
 	}
 
 	private void createTable(MetadataTable metadataTable) {
+		LOGGER.info("Creating table " + metadataTable.getName());
 		this.repositoryCoordinator.createTable(metadataTable);
 	}
 
@@ -147,7 +150,7 @@ public abstract class MetadataRepository {
 	public abstract void save(DataObject dataObject) throws MetadataRepositorySaveException;
 
 	public void shutdown() {
-		LOGGER.info("shutting down metadata repository " + getCategory());
+		LOGGER.debug("shutting down metadata repository " + getCategory());
 		repositoryCoordinator.shutdown();
 	}
 }

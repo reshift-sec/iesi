@@ -197,7 +197,6 @@ public abstract class ScriptExecution {
 		this.processId = processId;
 	}
 
-
 	public ExecutionMetrics getExecutionMetrics() {
 		return executionMetrics;
 	}

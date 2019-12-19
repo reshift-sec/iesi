@@ -40,13 +40,12 @@ public class ScriptJavaProcessExecutor extends ScriptExecutor {
     }
 
     private void setCommand(ProcessBuilder builder, ScriptExecutionRequest scriptExecutionRequest) throws ScriptDoesNotExistException {
-        // TODO
         Script script = ScriptExecutionRequestHandlerService.getInstance().getScript(scriptExecutionRequest);
         boolean isWindows = System.getProperty("os.name".toLowerCase()).startsWith("windows");
         if (isWindows) {
-            builder.command("cmd.exe", "/c", "iesi-launch.cmd", "-script", script.getName());
+            builder.command("cmd.exe", "/c", "iesi-launch.cmd", "-name", script.getName(), "-env", scriptExecutionRequest.getEnvironment(), "-version", Long.toString(script.getVersion().getNumber()));
         } else {
-            builder.command("sh", "-c", "ls");
+            builder.command("cmd.exe", "/c", "iesi-launch.cmd", "-name", script.getName(), "-env", scriptExecutionRequest.getEnvironment(), "-version", Long.toString(script.getVersion().getNumber()));
         }
     }
 

@@ -1,0 +1,74 @@
+---
+data:
+  name: SCRPT_EXEC_REQ
+  label: ScriptExecutionRequests
+  description: In-process runtime script requests for execution
+  type: operational
+  category: execution
+  migrate: Y
+  migrationKey: NA
+  fields:
+  - name: EXEC_REQUEST_ID
+    description: Unique identifier for the script request item
+    order: '1'
+    type: string
+    length: '255'
+    nullable: N
+    defaultTimestamp: ''
+  - name: SCRPT_REQUEST_ID
+    description: Unique identifier for the script request item
+    order: '1'
+    type: string
+    length: '255'
+    nullable: N
+    defaultTimestamp: ''
+  - name: EXIT
+    description: Unique identifier for the script request item
+    order: '1'
+    type: string
+    length: '255'
+    nullable: N
+    defaultTimestamp: ''
+  - name: IMPERSONATION
+    description: impersonation
+    order: '1'
+    type: string
+    length: '255'
+    nullable: Y
+    defaultTimestamp: ''
+  - name: IMPERSONATIONS
+    description: impersonation
+    order: '1'
+    type: string
+    length: '255'
+    nullable: Y
+    defaultTimestamp: ''
+  - name: ENVIRONMENT
+    description: Request timestamp
+    order: '4'
+    type: string
+    length: '255'
+    nullable: N
+    defaultTimestamp: ''
+  - name: PARAMETERS
+    description: PARAMETERS
+    order: '5'
+    type: string
+    length: '2000'
+    nullable: Y
+    defaultTimestamp: ''
+  - name: ST_NM
+    description: Status
+    order: '10'
+    type: string
+    length: '100'
+    nullable: N
+    defaultTimestamp: ''
+  - name: LOAD_TMS
+    description: Load timestamp indicating when the record was inserted in the table
+    order: '15'
+    type: timestamp
+    length: '0'
+    nullable: N
+    defaultTimestamp: Y
+type: MetadataTable

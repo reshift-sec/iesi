@@ -5,6 +5,8 @@ import io.metadew.iesi.framework.configuration.FrameworkSettingConfiguration;
 import io.metadew.iesi.framework.execution.FrameworkControl;
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 
+import java.nio.file.Paths;
+
 public class ScriptExecutionRequestListener {
 
     private final ScriptMemoryExecutor scriptMemoryExecutor;
@@ -21,7 +23,7 @@ public class ScriptExecutionRequestListener {
 
     private ScriptExecutionRequestListener() {
         this.scriptMemoryExecutor = new ScriptMemoryExecutor(2);
-        this.scriptJavaProcessExecutor = new ScriptJavaProcessExecutor(2, FrameworkConfiguration.getInstance().getFrameworkHome());
+        this.scriptJavaProcessExecutor = new ScriptJavaProcessExecutor(2, Paths.get("C:\\Users\\robbe.berrevoets\\IESISandbox\\v0.2.0\\b2"));
     }
 
     public void execute(ScriptExecutionRequest scriptExecutionRequest) throws Exception {
@@ -29,9 +31,9 @@ public class ScriptExecutionRequestListener {
                 .map(settingPath -> FrameworkControl.getInstance().getProperty(settingPath))
                 .orElse("off")
                 .toLowerCase().equalsIgnoreCase("off")) {
-            scriptMemoryExecutor.execute(scriptExecutionRequest);
+            scriptJavaProcessExecutor.execute(scriptExecutionRequest);
         } else {
-            scriptMemoryExecutor.getQueue().execute(new ScriptExecutionTask(scriptExecutionRequest, scriptMemoryExecutor));
+            scriptJavaProcessExecutor.getQueue().execute(new ScriptExecutionTask(scriptExecutionRequest, scriptJavaProcessExecutor));
         }
     }
 }
