@@ -45,6 +45,9 @@ public class RequestCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
+            System.out.println("request.launcher.start");
+            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
             Command.initFrameworkInstance(command.ini);
 
             ExecutionRequestBuilder executionRequestBuilder = new ExecutionRequestBuilder();
@@ -76,10 +79,6 @@ public class RequestCommand implements Callable<Integer> {
             ExecutionRequest executionRequest = executionRequestBuilder.build();
             scriptExecutionRequestBuilder.executionRequestKey(executionRequest.getMetadataKey());
             executionRequest.setScriptExecutionRequests(Collections.singletonList(scriptExecutionRequestBuilder.build()));
-
-            // Calling the launch controller
-            System.out.println("request.launcher.start");
-            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
             ExecutionRequestConfiguration.getInstance().insert(executionRequest);
 

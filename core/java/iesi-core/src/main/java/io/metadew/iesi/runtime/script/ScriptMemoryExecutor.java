@@ -8,6 +8,7 @@ import io.metadew.iesi.metadata.definition.execution.script.key.ScriptExecutionK
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.definition.script.result.key.ScriptResultKey;
 import io.metadew.iesi.metadata.service.execution.script.ScriptExecutionRequestHandlerService;
+import io.metadew.iesi.runtime.script.environment_strategy.EnvironmentSelectionStrategy;
 import io.metadew.iesi.script.execution.ScriptExecution;
 import io.metadew.iesi.script.execution.ScriptExecutionBuilder;
 
@@ -18,6 +19,17 @@ public class ScriptMemoryExecutor extends ScriptExecutor {
 
     public ScriptMemoryExecutor(int threadSize) {
         super(threadSize);
+    }
+
+    public ScriptMemoryExecutor() {
+        super();
+    }
+
+    public ScriptMemoryExecutor(int threadSize, EnvironmentSelectionStrategy environmentSelectionStrategy) {
+        super(threadSize, environmentSelectionStrategy);
+    }
+    public ScriptMemoryExecutor(EnvironmentSelectionStrategy environmentSelectionStrategy) {
+        super(environmentSelectionStrategy);
     }
 
     @Override

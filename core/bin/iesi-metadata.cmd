@@ -16,6 +16,6 @@ set CLASSPATH=!CLASSPATH!;%LIB_DIR%\*
 
 set CLASSPATH=!CLASSPATH!
 
-java -cp !CLASSPATH! io.metadew.iesi.launch.Launcher -metadata %*
+java -cp !CLASSPATH! io.metadew.iesi.launch.Command metadata %*
 
 cd !CURRENT_DIR!

@@ -33,6 +33,9 @@ public class ExecuteCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
+            System.out.println("script.launcher.start");
+            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
             Command.initFrameworkInstance(command.ini);
 
             ScriptExecutionBuilder scriptExecutionBuilder = new ScriptExecutionBuilder(true, false);
@@ -50,9 +53,6 @@ public class ExecuteCommand implements Callable<Integer> {
             if (parameters != null) {
                 scriptExecutionBuilder.parameters(parseParameterRepresentation(parameters));
             }
-
-            System.out.println("script.launcher.start");
-            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 
             scriptExecutionBuilder.build().execute();
             FrameworkInstance.getInstance().shutdown();

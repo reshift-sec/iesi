@@ -4,6 +4,7 @@ import io.metadew.iesi.metadata.configuration.script.exception.ScriptDoesNotExis
 import io.metadew.iesi.metadata.definition.execution.script.ScriptExecutionRequest;
 import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.metadata.service.execution.script.ScriptExecutionRequestHandlerService;
+import io.metadew.iesi.runtime.script.environment_strategy.EnvironmentSelectionStrategy;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,10 +20,39 @@ public class ScriptJavaProcessExecutor extends ScriptExecutor {
     private final int timeout;
     private final Path home;
 
+    public ScriptJavaProcessExecutor(int threadSize, EnvironmentSelectionStrategy environmentSelectionStrategy, Path path, int timeout) {
+        super(threadSize, environmentSelectionStrategy);
+        this.home = path.resolve("bin");
+        this.timeout = timeout;
+    }
+    public ScriptJavaProcessExecutor(int threadSize, EnvironmentSelectionStrategy environmentSelectionStrategy, Path path) {
+        this(threadSize, environmentSelectionStrategy, path, 60);
+    }
+
+    public ScriptJavaProcessExecutor(Path path) {
+        this(path, 60);
+    }
+
+    public ScriptJavaProcessExecutor(Path path, int timeout) {
+        super();
+        this.home = path.resolve("bin");
+        this.timeout = timeout;
+    }
+
     public ScriptJavaProcessExecutor(int threadSize, Path path, int timeout) {
         super(threadSize);
         this.home = path.resolve("bin");
         this.timeout = timeout;
+    }
+
+    public ScriptJavaProcessExecutor(EnvironmentSelectionStrategy environmentSelectionStrategy, Path path, int timeout) {
+        super(environmentSelectionStrategy);
+        this.home = path.resolve("bin");
+        this.timeout = timeout;
+    }
+
+    public ScriptJavaProcessExecutor(EnvironmentSelectionStrategy environmentSelectionStrategy, Path path) {
+        this(environmentSelectionStrategy, path, 60);
     }
 
     public ScriptJavaProcessExecutor(int threadSize, Path path) {
@@ -41,11 +71,11 @@ public class ScriptJavaProcessExecutor extends ScriptExecutor {
 
     private void setCommand(ProcessBuilder builder, ScriptExecutionRequest scriptExecutionRequest) throws ScriptDoesNotExistException {
         Script script = ScriptExecutionRequestHandlerService.getInstance().getScript(scriptExecutionRequest);
-        boolean isWindows = System.getProperty("os.name".toLowerCase()).startsWith("windows");
+        boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
         if (isWindows) {
             builder.command("cmd.exe", "/c", "iesi-launch.cmd", "-name", script.getName(), "-env", scriptExecutionRequest.getEnvironment(), "-version", Long.toString(script.getVersion().getNumber()));
         } else {
-            builder.command("cmd.exe", "/c", "iesi-launch.cmd", "-name", script.getName(), "-env", scriptExecutionRequest.getEnvironment(), "-version", Long.toString(script.getVersion().getNumber()));
+            builder.command("sh", "iesi-launch.sh", "-name", script.getName(), "-env", scriptExecutionRequest.getEnvironment(), "-version", Long.toString(script.getVersion().getNumber()));
         }
     }
 

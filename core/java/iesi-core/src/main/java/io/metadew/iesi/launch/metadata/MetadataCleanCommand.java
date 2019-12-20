@@ -18,9 +18,9 @@ public class MetadataCleanCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        System.out.println("metadata.launcher.start");
-        System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
         try {
+            System.out.println("metadata.launcher.start");
+            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             Command.initFrameworkInstance(metadataCommand.command.ini);
 
             MetadataCommand.getMetadataRepositories(metadataCommand.types)

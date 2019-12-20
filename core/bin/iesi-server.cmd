@@ -16,6 +16,6 @@ set CLASSPATH=!CLASSPATH!;%LIB_DIR%\*;
 
 set CLASSPATH=!CLASSPATH!
 
-java -Dlog4j.configurationFile=%LIB_DIR%\log4j2.xml -cp !CLASSPATH! io.metadew.iesi.launch.Launcher - server %*
+java -Dlog4j.configurationFile=%LIB_DIR%\log4j2.xml -cp !CLASSPATH! io.metadew.iesi.launch.Command server %*
 
 cd !CURRENT_DIR!

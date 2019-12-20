@@ -22,6 +22,8 @@ public class ServerCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
+            System.out.println("server.launcher.start");
+            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             Command.initFrameworkInstance(command.ini);
             ExecutionRequestListener executionRequestListener = new ExecutionRequestListener();
             final Thread mainThread = Thread.currentThread();
@@ -40,9 +42,10 @@ public class ServerCommand implements Callable<Integer> {
             synchronized (syncObject) {
                 syncObject.wait();
             }
-            System.out.println("test");
             executionRequestListener.shutdown();
             FrameworkInstance.getInstance().shutdown();
+            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+            System.out.println("server.launcher.end");
             return 0;
         } catch (Exception e) {
             System.out.println(e.getMessage());

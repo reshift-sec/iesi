@@ -12,6 +12,7 @@ import io.metadew.iesi.metadata.execution.MetadataControl;
 import io.metadew.iesi.metadata.repository.MetadataRepository;
 import io.metadew.iesi.metadata.repository.configuration.MetadataRepositoryConfiguration;
 import io.metadew.iesi.runtime.ExecutorService;
+import io.metadew.iesi.runtime.script.ScriptExecutionRequestListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ public abstract class FrameworkInstance {
 
         FrameworkExecution.getInstance().init(context);
         // TODO: move Executor (Request to separate module)
+        ScriptExecutionRequestListener.getInstance();
         ExecutorService.getInstance();
     }
 
