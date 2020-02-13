@@ -145,7 +145,7 @@ public class HttpExecuteRequest {
         outputDataset = convertOutputDatasetReferenceName(setDatasetActionParameterOperation.getValue());
         if (getOutputDataset().isPresent()) {
             List<String> labels = new ArrayList<>(outputDataset.getLabels());
-            labels.add("typed");
+            labels.add("raw");
             rawOutputDataset = (KeyValueDataset) DatasetHandler.getInstance().getByNameAndLabels(outputDataset.getName(), labels, executionControl.getExecutionRuntime());
         }
 
@@ -173,7 +173,7 @@ public class HttpExecuteRequest {
         HttpResponse httpResponse;
         if (getProxyConnection().isPresent()) {
             httpResponse = httpRequestService.send(httpRequest, proxyConnection);
-        }else {
+        } else {
             httpResponse = httpRequestService.send(httpRequest);
         }
         outputResponse(httpResponse);
@@ -368,12 +368,11 @@ public class HttpExecuteRequest {
             try {
                 JsonNode jsonNode = new ObjectMapper().readTree(httpResponse.getEntityString().get());
                 setRuntimeVariable(jsonNode, setRuntimeVariables);
-                // TODO: flip raw/normal if ready to migrate
-                getOutputDataset().ifPresent(dataset -> {
-                    DatasetHandler.getInstance().clean(dataset, getExecutionControl().getExecutionRuntime());
-                    KeyValueDatasetService.getInstance().writeRawJSON(dataset, jsonNode);
-                });
                 getRawOutputDataset().ifPresent(dataset -> {
+                    DatasetHandler.getInstance().clean(dataset, getExecutionControl().getExecutionRuntime());
+                    DatasetHandler.getInstance().setDataItem(dataset, "response", new Text(httpResponse.getEntityString().orElse("")));
+                });
+                getOutputDataset().ifPresent(dataset -> {
                     DatasetHandler.getInstance().clean(dataset, getExecutionControl().getExecutionRuntime());
                     try {
                         KeyValueDatasetService.getInstance().write(dataset, (ObjectNode) jsonNode, executionControl.getExecutionRuntime());
@@ -449,9 +448,11 @@ public class HttpExecuteRequest {
     private Optional<KeyValueDataset> getOutputDataset() {
         return Optional.ofNullable(outputDataset);
     }
+
     private Optional<List<String>> getExpectedStatusCodes() {
         return Optional.ofNullable(expectedStatusCodes);
     }
+
     private Optional<ProxyConnection> getProxyConnection() {
         return Optional.ofNullable(proxyConnection);
     }
