@@ -6,6 +6,7 @@ import io.metadew.iesi.metadata.definition.script.Script;
 import io.metadew.iesi.script.action.fwk.FwkIncludeScript;
 import io.metadew.iesi.script.operation.ActionSelectOperation;
 import io.metadew.iesi.script.operation.RouteOperation;
+import lombok.Getter;
 import lombok.ToString;
 import org.apache.logging.log4j.Level;
 
@@ -22,6 +23,7 @@ public abstract class ScriptExecution {
 	private boolean exitOnCompletion;
 	private ScriptExecution parentScriptExecution;
 	private String result;
+	@Getter
 	public Map<String, String> parameters;
 	public Map<String, String> impersonations;
 	private ActionSelectOperation actionSelectOperation;

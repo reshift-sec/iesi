@@ -16,17 +16,15 @@ import java.util.stream.Collectors;
 public class ExecutionTrace {
 
     private ActionTraceService actionTraceService;
-    private ScriptTraceService scriptTraceService;
 
     // Constructors
     public ExecutionTrace() {
         this.actionTraceService = new ActionTraceService();
-        this.scriptTraceService = new ScriptTraceService();
     }
 
     // Insert
     public void setExecution(ScriptExecution scriptExecution) {
-        scriptTraceService.trace(scriptExecution);
+        ScriptTraceService.getInstance().trace(scriptExecution);
     }
 
     public void setExecution(ActionExecution actionExecution, HashMap<String, ActionParameterOperation> actionParameterOperationMap) {

@@ -44,7 +44,6 @@ public class ExecutionControl {
     private String envName;
     private boolean actionErrorStop = false;
     private boolean scriptExit = false;
-    private ScriptDesignTraceService scriptDesignTraceService;
 
     private Long lastProcessId;
 
@@ -52,7 +51,6 @@ public class ExecutionControl {
 
     public ExecutionControl() throws ClassNotFoundException, NoSuchMethodException,
             InvocationTargetException, InstantiationException, IllegalAccessException {
-        this.scriptDesignTraceService = new ScriptDesignTraceService();
         this.actionDesignTraceService = new ActionDesignTraceService();
         this.executionTrace = new ExecutionTrace();
         initializeRunId();
@@ -106,7 +104,7 @@ public class ExecutionControl {
 
 
         // Trace the design of the script
-        scriptDesignTraceService.trace(scriptExecution);
+        ScriptDesignTraceService.getInstance().trace(scriptExecution);
     }
 
     public void logStart(ActionExecution actionExecution) {
