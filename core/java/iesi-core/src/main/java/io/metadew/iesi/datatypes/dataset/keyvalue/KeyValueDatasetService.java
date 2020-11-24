@@ -247,6 +247,23 @@ public class KeyValueDatasetService extends DatasetService<KeyValueDataset> impl
         }
     }
 
+    public void deleteDataset(KeyValueDataset keyValueDataset, ExecutionRuntime executionRuntime) {
+        for (DataType dataType : getDataItems(keyValueDataset, executionRuntime).values()) {
+            delete(dataType, executionRuntime);
+        }
+        DatasetMetadataService.getInstance().delete(keyValueDataset.getDatasetMetadata(), keyValueDataset);
+    }
+
+    public void delete(DataType dataType, ExecutionRuntime executionRuntime) {
+        if (dataType instanceof Array) {
+            for (DataType element : ((Array) dataType).getList()) {
+                delete(element, executionRuntime);
+            }
+        } else if (dataType instanceof Dataset) {
+            deleteDataset((KeyValueDataset) dataType, executionRuntime);
+        }
+    }
+
     @Override
     public Optional<DataType> getDataItem(KeyValueDataset dataset, String dataItem, ExecutionRuntime executionRuntime) {
         String query = "select value from " + SQLTools.GetStringForSQLTable(dataset.getTableName()) + " where key = " + SQLTools.GetStringForSQL(dataItem) + ";";

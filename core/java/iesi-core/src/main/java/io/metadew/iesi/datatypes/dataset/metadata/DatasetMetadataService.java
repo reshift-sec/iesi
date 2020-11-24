@@ -6,12 +6,14 @@ import io.metadew.iesi.connection.database.DatabaseHandler;
 import io.metadew.iesi.connection.database.sqlite.SqliteDatabase;
 import io.metadew.iesi.connection.database.sqlite.SqliteDatabaseConnection;
 import io.metadew.iesi.connection.tools.SQLTools;
+import io.metadew.iesi.datatypes.dataset.keyvalue.KeyValueDataset;
 import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 
 import javax.sql.rowset.CachedRowSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -47,20 +49,41 @@ public class DatasetMetadataService {
 
     public Optional<Long> getId(DatasetMetadata datasetMetadata, List<String> labels) {
         try {
-            String query = "SELECT DATASET_INV_ID FROM CFG_DATASET_LBL WHERE DATASET_LBL_VAL in (" + labels.stream().map(SQLTools::GetStringForSQL).collect(Collectors.joining(",")) +
-                    ") GROUP BY DATASET_INV_ID HAVING COUNT(DISTINCT DATASET_LBL_VAL) = " + labels.size() + ";";
-            CachedRowSet cachedRowSet = DatabaseHandler.getInstance().executeQuery(datasetMetadata.getDatabase(), query);
+            String getByLabelSetValueSubQuery = "SELECT " +
+                    "dataset_impl_labels.DATASET_INV_ID " +
+                    "FROM CFG_DATASET_LBL dataset_impl_labels " +
+                    "WHERE dataset_impl_labels.DATASET_LBL_VAL = {0}";
+
+            String getByLabelSetCountSubQuery = "SELECT " +
+                    "dataset_impl_labels.DATASET_INV_ID " +
+                    "FROM CFG_DATASET_LBL dataset_impl_labels " +
+                    "GROUP BY dataset_impl_labels.DATASET_INV_ID " +
+                    "HAVING COUNT(DISTINCT dataset_impl_labels.DATASET_LBL_VAL) = {0}";
+
+            String labelSetQuery = labels.stream()
+                    .map(s -> MessageFormat.format(getByLabelSetValueSubQuery, SQLTools.GetStringForSQL(s)))
+                    .collect(Collectors.joining(" intersect "));
+            labelSetQuery = labelSetQuery + " intersect " + MessageFormat.format(getByLabelSetCountSubQuery, SQLTools.GetStringForSQL(labels.size()));
+
+
+
+//            String query = "SELECT DATASET_INV_ID FROM CFG_DATASET_LBL WHERE DATASET_LBL_VAL in (" + labels.stream().map(SQLTools::GetStringForSQL).collect(Collectors.joining(",")) +
+//                    ") GROUP BY DATASET_INV_ID HAVING COUNT(DISTINCT DATASET_LBL_VAL) = " + labels.size() + ";";
+            CachedRowSet cachedRowSet = DatabaseHandler.getInstance().executeQuery(datasetMetadata.getDatabase(), labelSetQuery);
             if (cachedRowSet.size() == 0) {
                 return Optional.empty();
             } else if (cachedRowSet.size() > 1) {
                 log.trace(MessageFormat.format("Found multiple dataset ids ({0}) for labels {1}-{2}. Returning first occurence",
                         cachedRowSet.size(), datasetMetadata.getDatasetName(), String.join(", ", labels)));
             }
-            cachedRowSet.next();
-            long datasetInventoryId = cachedRowSet.getLong("DATASET_INV_ID");
-            log.trace("Found dataset id {0} for labels {1}-{2}.", Long.toString(datasetInventoryId), datasetMetadata.getDatasetName(), String.join(", ", labels));
-
-            return Optional.of(datasetInventoryId);
+            List<Long> ids = new ArrayList<>();
+            while (cachedRowSet.next()) {
+                ids.add(cachedRowSet.getLong("DATASET_INV_ID"));
+            }
+            if (ids.size() > 1) {
+                log.warn(MessageFormat.format("Found multiple dataset id ({0}) linked to labels {1}-{2}.", ids.stream().map(Object::toString).collect(Collectors.joining(", ")), datasetMetadata.getDatasetName(), String.join(", ", labels)));
+            }
+            return ids.isEmpty() ? Optional.empty() : Optional.of(ids.get(ids.size() - 1));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -152,6 +175,16 @@ public class DatasetMetadataService {
 
     public void shutdown(DatasetMetadata datasetMetadata) {
         DatabaseHandler.getInstance().shutdown(datasetMetadata.getDatabase());
+    }
+
+    public void delete(DatasetMetadata datasetMetadata, KeyValueDataset keyValueDataset) {
+        Optional<Long> id = getId(datasetMetadata, keyValueDataset.getLabels());
+        while (id.isPresent()) {
+            log.warn(MessageFormat.format("deleting dataset with id {0}", id.get()));
+            String deleteQuery = MessageFormat.format("DELETE FROM CFG_DATASET_LBL where DATASET_INV_ID={0}", id.get());
+            DatabaseHandler.getInstance().executeUpdate(datasetMetadata.getDatabase(), deleteQuery);
+            id = getId(datasetMetadata, keyValueDataset.getLabels());
+        }
     }
 
 }
