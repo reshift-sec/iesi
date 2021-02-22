@@ -21,8 +21,10 @@
         <java.version>1.8</java.version>
         <start-class>io.metadew.iesi.server.rest.Application</start-class>
         <packaging.type>jar</packaging.type>
+        <sonar.projectKey>reshift-sec_iesi</sonar.projectKey>
+        <sonar.organization>reshift-sec</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
-
 
     <profiles>
         <profile>
